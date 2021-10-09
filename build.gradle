@@ -1,0 +1,95 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+	maven { url = "http://maven.cil.li/" }
+	maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+apply plugin: "com.matthewprenger.cursegradle"
+
+def ver = System.getenv("APPVEYOR_BUILD_VERSION")
+if(ver == null)
+	ver = 'dev'
+
+def key = System.getenv("CURSETOKEN")
+if(key == null)
+	key = 'dev'
+curseforge {
+  apiKey = key
+  project {
+    id = '440990'
+    changelog = file('changelog.md')
+    releaseType = 'beta'
+    changelogType = 'markdown'
+    mainArtifact(jar) {
+      relations {
+        optionalDependency 'opencomputers'
+      }
+    }
+  }
+}
+
+version = ver
+group = 'eu.gir'
+archivesBaseName = 'GIRSignals'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+minecraft {
+    mappings channel: 'snapshot', version: '20171003-1.12'
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        server {
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
+}
+
+dependencies {   
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+}
+
+jar {
+    manifest {
+        attributes([
+            "Specification-Title": "GIRSignals",
+            "Specification-Vendor": "German Immersive Railroading Community",
+            "Specification-Version": ver,
+            "Implementation-Title": project.name,
+            "Implementation-Version": ver,
+            "Implementation-Vendor" :"German Immersive Railroading Community",
+            "Implementation-Timestamp": new Date().format("dd-MM-yyyy'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"               
+        expand "version":ver
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
+
+jar.finalizedBy('reobfJar')
