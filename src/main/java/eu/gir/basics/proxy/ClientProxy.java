@@ -1,5 +1,7 @@
 package eu.gir.basics.proxy;
 
+import eu.gir.basics.init.GIRModel;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -8,6 +10,7 @@ public class ClientProxy extends CommonProxy {
 
 	public void preinit(FMLPreInitializationEvent event) {
 		super.preinit(event);
+		ModelLoaderRegistry.registerLoader(new GIRModel());
 	}
 
 	public void init(FMLInitializationEvent event) {

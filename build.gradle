@@ -44,7 +44,7 @@ curseforge {
 
 version = ver
 group = 'eu.gir'
-archivesBaseName = 'GIRSignals'
+archivesBaseName = 'invisiblelights'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -71,7 +71,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "GIRSignals",
+            "Specification-Title": "invisiblelights",
             "Specification-Vendor": "German Immersive Railroading Community",
             "Specification-Version": ver,
             "Implementation-Title": project.name,

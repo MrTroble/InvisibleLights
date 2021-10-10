@@ -5,10 +5,13 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import eu.gir.basics.GIRMain;
+import eu.gir.basics.blocks.BlockInvisibleLight;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -16,6 +19,28 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class GIRInit {
+
+	public static final CreativeTabs LIGHT_TAB = new CreativeTabs("invisiblelights") {
+		@Override
+		public ItemStack getTabIconItem() {
+			return new ItemStack(INVISIBLE_LIGHTS_2);
+		}
+	};
+	
+	public static final Block INVISIBLE_LIGHTS_2 = new BlockInvisibleLight(2);
+	public static final Block INVISIBLE_LIGHTS_3 = new BlockInvisibleLight(3);
+	public static final Block INVISIBLE_LIGHTS_4 = new BlockInvisibleLight(4);
+	public static final Block INVISIBLE_LIGHTS_5 = new BlockInvisibleLight(5);
+	public static final Block INVISIBLE_LIGHTS_6 = new BlockInvisibleLight(6);
+	public static final Block INVISIBLE_LIGHTS_7 = new BlockInvisibleLight(7);
+	public static final Block INVISIBLE_LIGHTS_8 = new BlockInvisibleLight(8);
+	public static final Block INVISIBLE_LIGHTS_9 = new BlockInvisibleLight(9);
+	public static final Block INVISIBLE_LIGHTS_10 = new BlockInvisibleLight(10);
+	public static final Block INVISIBLE_LIGHTS_11 = new BlockInvisibleLight(11);
+	public static final Block INVISIBLE_LIGHTS_12 = new BlockInvisibleLight(12);
+	public static final Block INVISIBLE_LIGHTS_13 = new BlockInvisibleLight(13);
+	public static final Block INVISIBLE_LIGHTS_14 = new BlockInvisibleLight(14);
+	public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
 
 	private static final ArrayList<Block> blocksToRegister = new ArrayList<>();
 	private static final ArrayList<Item> itemsToRegister = new ArrayList<>();

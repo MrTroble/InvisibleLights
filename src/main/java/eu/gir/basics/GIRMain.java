@@ -16,7 +16,7 @@ public class GIRMain {
 
 	@Instance
 	private static GIRMain instance;
-	public static final String MODID = "test";
+	public static final String MODID = "invisiblelights";
 
 	public static GIRMain getInstance() {
 		return instance;
