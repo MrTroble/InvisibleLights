@@ -1,10 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-	maven { url = "http://maven.cil.li/" }
-	maven {
-      url "https://plugins.gradle.org/m2/"
-    }
+        maven { url "https://plugins.gradle.org/m2/" }
         jcenter()
         mavenCentral()
     }
@@ -30,7 +27,7 @@ if(key == null)
 curseforge {
   apiKey = key
   project {
-    id = '440990'
+    id = 'test'
     changelog = file('changelog.md')
     releaseType = 'beta'
     changelogType = 'markdown'
