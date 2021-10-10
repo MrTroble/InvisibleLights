@@ -42,8 +42,8 @@ public class GIRInit {
 	public static final Block INVISIBLE_LIGHTS_14 = new BlockInvisibleLight(14);
 	public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
 
-	private static final ArrayList<Block> blocksToRegister = new ArrayList<>();
-	private static final ArrayList<Item> itemsToRegister = new ArrayList<>();
+	public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
+	public static final ArrayList<Item> itemsToRegister = new ArrayList<>();
 
 	public static void init() {
 		final Field[] fields = GIRInit.class.getFields();
