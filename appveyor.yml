@@ -1,0 +1,25 @@
+version: 1.0.{build}
+skip_tags: true
+environment:
+  CURSETOKEN:
+    secure: nGC9Ccwa4F7+jw/Fgd7MLwI41CJCx+ukQu7zmy0axA4muFndxX6xPUKZWJKl8HmY
+cache: C:\Users\appveyor\.gradle\
+build_script:
+  - cmd: >-
+      ./gradlew build --warning-mode=none
+artifacts:
+  - path: build\libs\*.jar
+    name: GIRC-MOD
+deploy:
+  - provider: GitHub
+    auth_token:
+      secure: KId8tjDGvhE/MQ6wwMBW36rGRT4So8NaEW4MYt0GSO1FpVIpTYxQmTRA0txH/4JA
+    artifact: GIRC-MOD
+    force_update: true
+    on:
+      branch: /.*-master$/
+after_deploy:
+  - ps: >-
+      if($env:APPVEYOR_REPO_BRANCH -match "-master$") {
+        ./gradlew curseforge{{TEST}} -PcreateBuild
+      }
