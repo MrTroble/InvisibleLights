@@ -17,9 +17,9 @@ deploy:
     artifact: GIRC-MOD
     force_update: true
     on:
-      branch: /.*-master$/
+      branch: master
 after_deploy:
   - ps: >-
       if($env:APPVEYOR_REPO_BRANCH -match "-master$") {
-        ./gradlew curseforge{{TEST}} -PcreateBuild
+        ./gradlew curseforge535730 -PcreateBuild
       }

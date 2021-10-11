@@ -27,7 +27,7 @@ if(key == null)
 curseforge {
   apiKey = key
   project {
-    id = 'test'
+    id = '535730'
     changelog = file('changelog.md')
     releaseType = 'beta'
     changelogType = 'markdown'
