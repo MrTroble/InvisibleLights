@@ -20,6 +20,6 @@ deploy:
       branch: master
 after_deploy:
   - ps: >-
-      if($env:APPVEYOR_REPO_BRANCH -match "-master$") {
+      if($env:APPVEYOR_REPO_BRANCH -match "master") {
         ./gradlew curseforge535730 -PcreateBuild
       }
