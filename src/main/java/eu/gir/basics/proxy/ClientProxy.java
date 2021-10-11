@@ -24,14 +24,12 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public static void modelEvents(final ModelRegistryEvent event) {
-		System.out.println("TESSSSSSSSSSSSSSSSSSSTTTTTTTTTTT");
 		GIRInit.itemsToRegister.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0,
 				new ModelResourceLocation(item.getRegistryName(), "inventory")));
 		GIRInit.blocksToRegister.forEach(block -> {
 			final Item item = Item.getItemFromBlock(block);
 			ModelLoader.setCustomModelResourceLocation(item, 0,
 					new ModelResourceLocation(item.getRegistryName(), "inventory"));
-			System.out.println(item);
 		});
 
 	}
@@ -39,13 +37,11 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
-
 	}
 
 	@Override
 	public void postinit(FMLPostInitializationEvent event) {
 		super.postinit(event);
-
 	}
 
 }

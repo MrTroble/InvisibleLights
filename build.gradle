@@ -31,11 +31,6 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'beta'
     changelogType = 'markdown'
-    mainArtifact(jar) {
-      relations {
-        optionalDependency 'opencomputers'
-      }
-    }
   }
 }
 
