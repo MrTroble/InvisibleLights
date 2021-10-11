@@ -1,18 +1,18 @@
 # Invisible Lights
 
 [
-![Curseforge Downloads]({{testdl}})
-![Curseforge Versions]({{testverim}})
-]({{testver}})
+![Curseforge Downloads](https://cf.way2muchnoise.eu/invisible-lights.svg)
+![Curseforge Versions](http://cf.way2muchnoise.eu/versions/invisible-lights.svg)
+](https://www.curseforge.com/minecraft/mc-mods/invisible-lights)
 [
 ![Discord](https://img.shields.io/discord/690967067855421470)
 ](https://discord.gg/UdxeFgG)
 
-## This mod adds a lot of commonly used german signal systems as controllable signals
+## This mod adds invisible light blocks to help you better illuminate your world.
 
-- Download on [curseforge]({{testcurse}}).  
+- Download on [curseforge](https://www.curseforge.com/minecraft/mc-mods/invisible-lights).  
 - Find more information on our [website](https://girc.eu/).
-- Updates can be found in the [changelog](changelog.txt).
+- Updates can be found in the [changelog](changelog.md).
 
 ## How to build this mod
 
