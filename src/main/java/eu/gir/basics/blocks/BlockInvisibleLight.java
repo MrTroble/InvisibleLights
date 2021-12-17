@@ -18,6 +18,7 @@ public class BlockInvisibleLight extends Block {
 		super(Material.GROUND);
 		this.setLightLevel(light / 15.0f);
 		this.setCreativeTab(GIRInit.LIGHT_TAB);
+		this.disableStats();
 	}
 
 	@Override
