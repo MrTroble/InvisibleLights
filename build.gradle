@@ -29,7 +29,7 @@ curseforge {
   project {
     id = '535730'
     changelog = file('changelog.md')
-    releaseType = 'beta'
+    releaseType = 'release'
     changelogType = 'markdown'
   }
 }
