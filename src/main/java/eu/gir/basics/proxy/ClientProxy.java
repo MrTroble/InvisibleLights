@@ -6,6 +6,7 @@ import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.init.GIRInit;
 import eu.gir.basics.init.GIRModel;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -81,6 +83,15 @@ public class ClientProxy extends CommonProxy {
 				}
 			}
 		}).start();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
+		final World world = render.getPlayer().getEntityWorld();
+		final IBlockState state = world.getBlockState(render.getTarget().getBlockPos());
+		if (state.getBlock() instanceof BlockInvisibleLight)
+			render.setCanceled(true);
 	}
 	
 	@SideOnly(Side.CLIENT)
