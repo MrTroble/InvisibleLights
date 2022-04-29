@@ -13,8 +13,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -88,8 +90,18 @@ public class ClientProxy extends CommonProxy {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
-		final World world = render.getPlayer().getEntityWorld();
-		final IBlockState state = world.getBlockState(render.getTarget().getBlockPos());
+		final EntityPlayer player = render.getPlayer();
+		if (player == null)
+			return;
+		final World world = player.getEntityWorld();
+		if (world == null)
+			return;
+		final RayTraceResult result = render.getTarget();
+		if (result == null)
+			return;
+		final IBlockState state = world.getBlockState(result.getBlockPos());
+		if (state == null)
+			return;
 		if (state.getBlock() instanceof BlockInvisibleLight)
 			render.setCanceled(true);
 	}
