@@ -99,9 +99,10 @@ public class ClientProxy extends CommonProxy {
 		final RayTraceResult result = render.getTarget();
 		if (result == null)
 			return;
-		final IBlockState state = world.getBlockState(result.getBlockPos());
-		if (state == null)
+		final BlockPos pos = result.getBlockPos();
+		if (pos == null)
 			return;
+		final IBlockState state = world.getBlockState(pos);
 		if (state.getBlock() instanceof BlockInvisibleLight)
 			render.setCanceled(true);
 	}
