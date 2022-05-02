@@ -1,5 +1,10 @@
 # Changelog
 
+## [Fix/Update]
+
+* perf: fixed issue with render performance
+* feat: Removed border
+
 ## 01.31.22 - 1
 
 * Update readme
