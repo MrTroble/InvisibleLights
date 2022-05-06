@@ -12,6 +12,8 @@ artifacts:
     name: GIRC-MOD
 deploy:
   - provider: GitHub
+    auth_token:
+      secure: 5oeQuJ1HS/4OdMCprhYzOzLOFKUbiG0kDmYUTriCax28T9XKk0OS+M/CBc2FpJU5
     artifact: GIRC-MOD
     force_update: true
     on:
