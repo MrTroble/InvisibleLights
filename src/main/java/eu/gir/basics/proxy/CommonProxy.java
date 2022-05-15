@@ -1,5 +1,6 @@
 package eu.gir.basics.proxy;
 
+import eu.gir.basics.blocks.BlockGhostGlowstone;
 import eu.gir.basics.init.GIRInit;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -14,7 +15,7 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent event) {
-
+	    BlockGhostGlowstone.init();
 	}
 
 	public void postinit(FMLPostInitializationEvent event) {

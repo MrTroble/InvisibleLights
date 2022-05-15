@@ -12,5 +12,6 @@ tile.invisiblelights12.name=Unsichtbares Licht (Lv12)
 tile.invisiblelights13.name=Unsichtbares Licht (Lv13)
 tile.invisiblelights14.name=Unsichtbares Licht (Lv14)
 tile.invisiblelights15.name=Unsichtbares Licht (Lv15)
+tile.ghostglowstone.name=Geist Glowstone
 
 itemGroup.invisiblelights=Unsichtbare Lichter

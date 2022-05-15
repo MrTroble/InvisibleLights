@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import eu.gir.basics.GIRMain;
+import eu.gir.basics.blocks.BlockGhostGlowstone;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
@@ -41,6 +42,7 @@ public class GIRInit {
 	public static final Block INVISIBLE_LIGHTS_13 = new BlockInvisibleLight(13);
 	public static final Block INVISIBLE_LIGHTS_14 = new BlockInvisibleLight(14);
 	public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
+	public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
 
 	public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
 	public static final ArrayList<Item> itemsToRegister = new ArrayList<>();
