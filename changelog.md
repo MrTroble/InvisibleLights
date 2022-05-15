@@ -1,5 +1,9 @@
 # Changelog
 
+## [Update] 05.15.2022
+
+* feat: Added crafting recipes
+
 ## [Fix/Update]
 
 * perf: fixed issue with render performance
