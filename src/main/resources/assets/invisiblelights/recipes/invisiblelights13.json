@@ -5,16 +5,7 @@
       "item": "minecraft:glowstone_dust"
     },
     {
-      "item": "minecraft:glowstone_dust"
-    },
-    {
-      "item": "minecraft:glowstone_dust"
-    },
-    {
-      "item": "minecraft:glowstone_dust"
-    },
-    {
-      "item": "minecraft:glowstone_dust"
+      "item": "minecraft:glowstone"
     },
     {
       "item": "minecraft:glowstone"
@@ -27,7 +18,7 @@
     }
   ],
   "result": {
-    "item": "invisiblelights:invisiblelights2",
+    "item": "invisiblelights:invisiblelights13",
     "count": 1
   }
 }
