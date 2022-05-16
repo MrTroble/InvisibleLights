@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "invisiblelights:invisiblelights14"
+    }
+  ],
+  "result": {
+    "item": "invisiblelights:invisiblelights15",
+    "count": 1
+  }
+}
