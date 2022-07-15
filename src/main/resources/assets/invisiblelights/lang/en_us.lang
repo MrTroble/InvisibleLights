@@ -13,5 +13,6 @@ tile.invisiblelights13.name=Invisible Light (Lv13)
 tile.invisiblelights14.name=Invisible Light (Lv14)
 tile.invisiblelights15.name=Invisible Light (Lv15)
 tile.ghostglowstone.name=Ghost Glowstone
+tile.blocker.name=Blocker
 
 itemGroup.invisiblelights=Invisible Lights
