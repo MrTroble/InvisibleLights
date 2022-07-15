@@ -3,6 +3,7 @@ package eu.gir.basics.proxy;
 import java.util.ArrayList;
 
 import eu.gir.basics.blocks.BlockInvisibleLight;
+import eu.gir.basics.blocks.BlockLightBlocker;
 import eu.gir.basics.init.GIRInit;
 import eu.gir.basics.init.GIRModel;
 import net.minecraft.block.Block;
@@ -59,8 +60,11 @@ public class ClientProxy extends CommonProxy {
 	private static double d2;
 	private static double d3;
 	
-	public static void render(final BlockPos pos1) {
-		RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset((pos1.getX()) - d1, (pos1.getY()) - d2, (pos1.getZ()) - d3), 0, 1, 0, 1);
+	private static final float[] COLOR_NORMAL = new float[] { 0, 1, 0, 1 };
+	private static final float[] COLOR_BLOCKER = new float[] { 1, 0, 0, 1 };
+	
+	public static void render(final BlockPos pos1, final float[] color) {
+		RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset((pos1.getX()) - d1, (pos1.getY()) - d2, (pos1.getZ()) - d3), color[0], color[1], color[2], color[3]);
 	}
 	
 	private static ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
@@ -158,7 +162,11 @@ public class ClientProxy extends CommonProxy {
 			
 			GlStateManager.disableTexture2D();
 			synchronized (playerPlacedBlocks) {
-				playerPlacedBlocks.forEach(ClientProxy::render);
+				playerPlacedBlocks.forEach(posIn -> {
+					final Block blockIn = sp.world.getBlockState(posIn).getBlock();
+					final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER : COLOR_NORMAL;
+					ClientProxy.render(posIn, color);
+				});
 			}
 			GlStateManager.enableTexture2D();
 		} else if (!playerPlacedBlocks.isEmpty()) {

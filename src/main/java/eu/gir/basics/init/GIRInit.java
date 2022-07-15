@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import eu.gir.basics.GIRMain;
 import eu.gir.basics.blocks.BlockGhostGlowstone;
 import eu.gir.basics.blocks.BlockInvisibleLight;
+import eu.gir.basics.blocks.BlockLightBlocker;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,8 +21,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class GIRInit {
-
+	
 	public static final CreativeTabs LIGHT_TAB = new CreativeTabs("invisiblelights") {
+		
 		@Override
 		public ItemStack getTabIconItem() {
 			return new ItemStack(INVISIBLE_LIGHTS_2);
@@ -42,11 +44,12 @@ public class GIRInit {
 	public static final Block INVISIBLE_LIGHTS_13 = new BlockInvisibleLight(13);
 	public static final Block INVISIBLE_LIGHTS_14 = new BlockInvisibleLight(14);
 	public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
+	public static final Block BLOCKER = new BlockLightBlocker();
 	public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
-
+	
 	public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
 	public static final ArrayList<Item> itemsToRegister = new ArrayList<>();
-
+	
 	public static void init() {
 		final Field[] fields = GIRInit.class.getFields();
 		for (Field field : fields) {
@@ -63,17 +66,14 @@ public class GIRInit {
 						if (block instanceof ITileEntityProvider) {
 							ITileEntityProvider provider = (ITileEntityProvider) block;
 							try {
-								Class<? extends TileEntity> tileclass = provider.createNewTileEntity(null, 0)
-										.getClass();
+								Class<? extends TileEntity> tileclass = provider.createNewTileEntity(null, 0).getClass();
 								TileEntity.register(tileclass.getSimpleName().toLowerCase(), tileclass);
 							} catch (NullPointerException ex) {
-								GIRMain.LOG.trace(
-										"All tileentity provide need to call back a default entity if the world is null!",
-										ex);
+								GIRMain.LOG.trace("All tileentity provide need to call back a default entity if the world is null!", ex);
 							}
 						}
-					} 
-					if(obj instanceof Item) {
+					}
+					if (obj instanceof Item) {
 						final Item item = (Item) obj;
 						item.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
 						item.setUnlocalizedName(name);
@@ -85,19 +85,18 @@ public class GIRInit {
 			}
 		}
 	}
-
+	
 	@SubscribeEvent
 	public static void registerBlock(RegistryEvent.Register<Block> event) {
 		IForgeRegistry<Block> registry = event.getRegistry();
 		blocksToRegister.forEach(registry::register);
 	}
-
+	
 	@SubscribeEvent
 	public static void registerItem(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> registry = event.getRegistry();
-		blocksToRegister
-				.forEach(block -> registry.register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
+		blocksToRegister.forEach(block -> registry.register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
 		itemsToRegister.forEach(registry::register);
 	}
-
+	
 }
