@@ -1,5 +1,9 @@
 # Changelog
 
+## [Update]
+
+* feat: Added light blocker
+
 ## [Update] 05.15.2022
 
 * feat: Added crafting recipes
