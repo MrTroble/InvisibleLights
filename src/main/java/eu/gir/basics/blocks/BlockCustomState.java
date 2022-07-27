@@ -32,29 +32,39 @@ public class BlockCustomState extends BlockCustomLight {
 		return new BlockStateContainer(this, POWERED);
 	}
 	
-	private void updateState(final World worldIn, final BlockPos pos, final IBlockState state) {
-		final boolean lastPowered = state.getValue(POWERED);
-		if (worldIn.isBlockPowered(pos) && !lastPowered) {
-			worldIn.setBlockState(pos, state.withProperty(POWERED, true), 3);
-		} else if (lastPowered) {
-			worldIn.setBlockState(pos, state.withProperty(POWERED, false), 3);
-		}
-	}
-	
 	@Override
 	public void onBlockAdded(final World worldIn, final BlockPos pos, final IBlockState state) {
 		super.onBlockAdded(worldIn, pos, state);
-		updateState(worldIn, pos, state);
+		if (worldIn.isRemote)
+			return;
+		final boolean lastPowered = state.getValue(POWERED);
+		if (worldIn.isBlockPowered(pos) && !lastPowered) {
+			worldIn.setBlockState(pos, state.withProperty(POWERED, true), 3);
+		} else if (!worldIn.isBlockPowered(pos) && lastPowered) {
+			worldIn.scheduleUpdate(pos, this, 4);
+		}
 	}
 	
 	@Override
 	public void updateTick(final World worldIn, final BlockPos pos, final IBlockState state, final Random rand) {
 		super.updateTick(worldIn, pos, state, rand);
-		updateState(worldIn, pos, state);
+		if (worldIn.isRemote)
+			return;
+		final boolean lastPowered = state.getValue(POWERED);
+		if (!worldIn.isBlockPowered(pos) && lastPowered) {
+			worldIn.scheduleUpdate(pos, this, 4);
+		}
 	}
 	
 	@Override
 	public void neighborChanged(final IBlockState state, final World worldIn, final BlockPos pos, final Block blockIn, final BlockPos fromPos) {
-		updateState(worldIn, pos, state);
+		if (worldIn.isRemote)
+			return;
+		final boolean lastPowered = state.getValue(POWERED);
+		if (worldIn.isBlockPowered(pos) && !lastPowered) {
+			worldIn.setBlockState(pos, state.withProperty(POWERED, true), 3);
+		} else if (!worldIn.isBlockPowered(pos) && lastPowered) {
+			worldIn.scheduleUpdate(pos, this, 4);
+		}
 	}
 }
