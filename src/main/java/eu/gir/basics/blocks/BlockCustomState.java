@@ -52,7 +52,7 @@ public class BlockCustomState extends BlockCustomLight {
 			return;
 		final boolean lastPowered = state.getValue(POWERED);
 		if (!worldIn.isBlockPowered(pos) && lastPowered) {
-			worldIn.scheduleUpdate(pos, this, 4);
+			worldIn.setBlockState(pos, state.withProperty(POWERED, false), 3);
 		}
 	}
 	
