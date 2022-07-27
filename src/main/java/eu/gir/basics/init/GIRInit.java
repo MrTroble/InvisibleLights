@@ -11,12 +11,14 @@ import eu.gir.basics.blocks.BlockLightBlocker;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -52,7 +54,7 @@ public class GIRInit {
 	
 	public static void init() {
 		final Field[] fields = GIRInit.class.getFields();
-		for (Field field : fields) {
+		for (final Field field : fields) {
 			final int modifiers = field.getModifiers();
 			if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && Modifier.isPublic(modifiers)) {
 				final String name = field.getName().toLowerCase().replace("_", "");
@@ -64,11 +66,11 @@ public class GIRInit {
 						block.setUnlocalizedName(name);
 						blocksToRegister.add(block);
 						if (block instanceof ITileEntityProvider) {
-							ITileEntityProvider provider = (ITileEntityProvider) block;
+							final ITileEntityProvider provider = (ITileEntityProvider) block;
 							try {
-								Class<? extends TileEntity> tileclass = provider.createNewTileEntity(null, 0).getClass();
+								final Class<? extends TileEntity> tileclass = provider.createNewTileEntity(null, 0).getClass();
 								TileEntity.register(tileclass.getSimpleName().toLowerCase(), tileclass);
-							} catch (NullPointerException ex) {
+							} catch (final NullPointerException ex) {
 								GIRMain.LOG.trace("All tileentity provide need to call back a default entity if the world is null!", ex);
 							}
 						}
@@ -87,16 +89,27 @@ public class GIRInit {
 	}
 	
 	@SubscribeEvent
-	public static void registerBlock(RegistryEvent.Register<Block> event) {
-		IForgeRegistry<Block> registry = event.getRegistry();
+	public static void registerBlock(final RegistryEvent.Register<Block> event) {
+		final IForgeRegistry<Block> registry = event.getRegistry();
 		blocksToRegister.forEach(registry::register);
 	}
 	
 	@SubscribeEvent
-	public static void registerItem(RegistryEvent.Register<Item> event) {
-		IForgeRegistry<Item> registry = event.getRegistry();
+	public static void registerItem(final RegistryEvent.Register<Item> event) {
+		final IForgeRegistry<Item> registry = event.getRegistry();
 		blocksToRegister.forEach(block -> registry.register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
 		itemsToRegister.forEach(registry::register);
 	}
 	
+	public static void blockBreakEven(final BreakEvent event) {
+		final Block block = event.getState().getBlock();
+		if (block instanceof BlockInvisibleLight) {
+			final EntityPlayer player = event.getPlayer();
+			final Item item = player.getHeldItemMainhand().getItem();
+			if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
+				event.setCanceled(true);
+				return;
+			}
+		}
+	}
 }
