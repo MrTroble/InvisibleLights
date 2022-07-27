@@ -55,6 +55,6 @@ public class BlockCustomState extends BlockCustomLight {
 	
 	@Override
 	public void neighborChanged(final IBlockState state, final World worldIn, final BlockPos pos, final Block blockIn, final BlockPos fromPos) {
-		updateState(worldIn, fromPos, state);
+		updateState(worldIn, pos, state);
 	}
 }
