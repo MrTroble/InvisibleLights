@@ -2,6 +2,10 @@
 
 ## [Update]
 
+* feat: blocks cannot be broken on without an invis block
+
+## [Update]
+
 * feat: Added light blocker
 
 ## [Update] 05.15.2022
