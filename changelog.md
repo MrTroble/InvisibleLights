@@ -2,6 +2,10 @@
 
 ## [Update]
 
+* added custom light blocks
+
+## [Update]
+
 * feat: blocks cannot be broken on without an invis block
 
 ## [Update]

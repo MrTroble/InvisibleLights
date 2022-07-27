@@ -2,6 +2,7 @@ package eu.gir.basics.proxy;
 
 import java.util.ArrayList;
 
+import eu.gir.basics.blocks.BlockCustomLight;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
 import eu.gir.basics.init.GIRInit;
@@ -62,6 +63,7 @@ public class ClientProxy extends CommonProxy {
 	
 	private static final float[] COLOR_NORMAL = new float[] { 0, 1, 0, 1 };
 	private static final float[] COLOR_BLOCKER = new float[] { 1, 0, 0, 1 };
+	private static final float[] COLOR_CUSTOM = new float[] { 1, 0.5f, 0, 1 };
 	
 	public static void render(final BlockPos pos1, final float[] color) {
 		RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset((pos1.getX()) - d1, (pos1.getY()) - d2, (pos1.getZ()) - d3), color[0], color[1], color[2], color[3]);
@@ -164,7 +166,7 @@ public class ClientProxy extends CommonProxy {
 			synchronized (playerPlacedBlocks) {
 				playerPlacedBlocks.forEach(posIn -> {
 					final Block blockIn = sp.world.getBlockState(posIn).getBlock();
-					final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER : COLOR_NORMAL;
+					final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
 					ClientProxy.render(posIn, color);
 				});
 			}
