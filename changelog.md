@@ -1,5 +1,9 @@
 # Changelog
 
+## [Fix]
+
+* fix: block update
+
 ## [Update]
 
 * added custom light blocks
