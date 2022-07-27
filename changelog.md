@@ -2,6 +2,10 @@
 
 ## [Fix]
 
+* fix: redstone update
+
+## [Fix]
+
 * fix: block update
 
 ## [Update]
