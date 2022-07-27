@@ -101,6 +101,7 @@ public class GIRInit {
 		itemsToRegister.forEach(registry::register);
 	}
 	
+	@SubscribeEvent
 	public static void blockBreakEven(final BreakEvent event) {
 		final Block block = event.getState().getBlock();
 		if (block instanceof BlockInvisibleLight) {
