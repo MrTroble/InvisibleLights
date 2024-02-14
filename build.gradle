@@ -1,12 +1,12 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
         maven { url "https://plugins.gradle.org/m2/" }
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1+'
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
@@ -38,7 +38,7 @@ version = ver
 group = 'eu.gir'
 archivesBaseName = 'invisiblelights'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
     mappings channel: 'snapshot', version: '20171003-1.12'
@@ -57,7 +57,7 @@ minecraft {
 }
 
 dependencies {   
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 }
 
 jar {
@@ -75,13 +75,11 @@ jar {
 }
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        include "mcmod.info"               
-        expand "version":ver
-    }
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "mcmod.info"
-    }
+	inputs.property "version", project.version
+	
+	filesMatching("mcmod.info") {
+		expand "version": project.version, "mcversion": "1.12.2"
+	}
 }
 
 jar.finalizedBy('reobfJar')
