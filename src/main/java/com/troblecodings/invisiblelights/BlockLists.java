@@ -1,4 +1,4 @@
-package eu.gir.basics;
+package com.troblecodings.invisiblelights;
 
 import java.io.StringReader;
 import java.nio.charset.Charset;
@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.apache.commons.io.input.ReaderInputStream;
 
-import eu.gir.basics.blocks.BlockCustomLight;
-import eu.gir.basics.blocks.BlockCustomState;
+import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
+import com.troblecodings.invisiblelights.blocks.BlockCustomState;
+
 import net.minecraft.block.Block;
 import net.minecraft.util.text.translation.LanguageMap;
 
@@ -18,7 +19,7 @@ public final class BlockLists {
 	
 	private Block addLanguage(final Block block, final String name, final StringBuilder builder) {
 		block.setUnlocalizedName(name);
-		block.setRegistryName(GIRMain.MODID, name);
+		block.setRegistryName(InvisibleLightsMain.MODID, name);
 		builder.append(block.getLocalizedName());
 		builder.append("=");
 		builder.append(name);

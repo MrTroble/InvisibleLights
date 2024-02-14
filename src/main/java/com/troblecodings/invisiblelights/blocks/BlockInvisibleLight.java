@@ -1,6 +1,7 @@
-package eu.gir.basics.blocks;
+package com.troblecodings.invisiblelights.blocks;
 
-import eu.gir.basics.init.GIRInit;
+import com.troblecodings.invisiblelights.init.ILInit;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -17,7 +18,7 @@ public class BlockInvisibleLight extends Block {
 	public BlockInvisibleLight(int light) {
 		super(Material.GROUND);
 		this.setLightLevel(light / 15.0f);
-		this.setCreativeTab(GIRInit.LIGHT_TAB);
+		this.setCreativeTab(ILInit.LIGHT_TAB);
 		this.disableStats();
 	}
 

@@ -1,13 +1,14 @@
-package eu.gir.basics.init;
+package com.troblecodings.invisiblelights.init;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
-import eu.gir.basics.GIRMain;
-import eu.gir.basics.blocks.BlockGhostGlowstone;
-import eu.gir.basics.blocks.BlockInvisibleLight;
-import eu.gir.basics.blocks.BlockLightBlocker;
+import com.troblecodings.invisiblelights.InvisibleLightsMain;
+import com.troblecodings.invisiblelights.blocks.BlockGhostGlowstone;
+import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
+import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,7 +23,7 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class GIRInit {
+public class ILInit {
 	
 	public static final CreativeTabs LIGHT_TAB = new CreativeTabs("invisiblelights") {
 		
@@ -53,7 +54,7 @@ public class GIRInit {
 	public static final ArrayList<Item> itemsToRegister = new ArrayList<>();
 	
 	public static void init() {
-		final Field[] fields = GIRInit.class.getFields();
+		final Field[] fields = ILInit.class.getFields();
 		for (final Field field : fields) {
 			final int modifiers = field.getModifiers();
 			if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && Modifier.isPublic(modifiers)) {
@@ -62,7 +63,7 @@ public class GIRInit {
 					final Object obj = field.get(null);
 					if (obj instanceof Block) {
 						final Block block = (Block) obj;
-						block.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
+						block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
 						block.setUnlocalizedName(name);
 						blocksToRegister.add(block);
 						if (block instanceof ITileEntityProvider) {
@@ -71,13 +72,13 @@ public class GIRInit {
 								final Class<? extends TileEntity> tileclass = provider.createNewTileEntity(null, 0).getClass();
 								TileEntity.register(tileclass.getSimpleName().toLowerCase(), tileclass);
 							} catch (final NullPointerException ex) {
-								GIRMain.LOG.trace("All tileentity provide need to call back a default entity if the world is null!", ex);
+								InvisibleLightsMain.LOG.trace("All tileentity provide need to call back a default entity if the world is null!", ex);
 							}
 						}
 					}
 					if (obj instanceof Item) {
 						final Item item = (Item) obj;
-						item.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
+						item.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
 						item.setUnlocalizedName(name);
 						itemsToRegister.add(item);
 					}
@@ -102,7 +103,7 @@ public class GIRInit {
 	}
 	
 	@SubscribeEvent
-	public static void blockBreakEven(final BreakEvent event) {
+	public static void blockBreakEvent(final BreakEvent event) {
 		final Block block = event.getState().getBlock();
 		if (block instanceof BlockInvisibleLight) {
 			final EntityPlayer player = event.getPlayer();

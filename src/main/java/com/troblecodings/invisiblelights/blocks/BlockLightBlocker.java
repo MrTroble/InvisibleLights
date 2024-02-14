@@ -1,6 +1,7 @@
-package eu.gir.basics.blocks;
+package com.troblecodings.invisiblelights.blocks;
 
-import eu.gir.basics.init.GIRInit;
+import com.troblecodings.invisiblelights.init.ILInit;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -10,7 +11,7 @@ public class BlockLightBlocker extends BlockInvisibleLight {
 	
 	public BlockLightBlocker() {
 		super(0);
-		this.setCreativeTab(GIRInit.LIGHT_TAB);
+		this.setCreativeTab(ILInit.LIGHT_TAB);
 		this.disableStats();
 	}
 	

@@ -1,12 +1,13 @@
-package eu.gir.basics.proxy;
+package com.troblecodings.invisiblelights.proxy;
 
 import java.util.ArrayList;
 
-import eu.gir.basics.blocks.BlockCustomLight;
-import eu.gir.basics.blocks.BlockInvisibleLight;
-import eu.gir.basics.blocks.BlockLightBlocker;
-import eu.gir.basics.init.GIRInit;
-import eu.gir.basics.init.GIRModel;
+import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
+import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
+import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
+import com.troblecodings.invisiblelights.init.ILInit;
+import com.troblecodings.invisiblelights.init.ILModel;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -41,13 +42,13 @@ public class ClientProxy extends CommonProxy {
 	public void preinit(final FMLPreInitializationEvent event) {
 		super.preinit(event);
 		MinecraftForge.EVENT_BUS.register(ClientProxy.class);
-		ModelLoaderRegistry.registerLoader(new GIRModel());
+		ModelLoaderRegistry.registerLoader(new ILModel());
 	}
 	
 	@SubscribeEvent
 	public static void modelEvents(final ModelRegistryEvent event) {
-		GIRInit.itemsToRegister.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory")));
-		GIRInit.blocksToRegister.forEach(block -> {
+		ILInit.itemsToRegister.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory")));
+		ILInit.blocksToRegister.forEach(block -> {
 			final Item item = Item.getItemFromBlock(block);
 			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
 		});
