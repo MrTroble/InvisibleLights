@@ -13,15 +13,13 @@ import com.google.gson.JsonSyntaxException;
 
 import eu.gir.basics.init.GIRInit;
 import eu.gir.basics.proxy.ClientProxy;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-
 
 @Mod(GIRMain.MODID)
 public class GIRMain {
@@ -30,14 +28,13 @@ public class GIRMain {
 	public static final Logger LOG = LogManager.getLogger(MODID);
 
 	public GIRMain() {
-		GIRInit.init();
 		loadCustomBlocks();
 
-		final FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
-		ctx.getModEventBus().addGenericListener(Block.class, GIRInit::registerBlocks);
-		ctx.getModEventBus().addGenericListener(Item.class, GIRInit::registerItems);
+		final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+		GIRInit.BLOCKS.register(modBus);
+		GIRInit.ITEMS.register(modBus);
 		DistExecutor.runWhenOn(Dist.CLIENT,
-				() -> () -> ctx.getModEventBus().addListener(ClientProxy::onClientSetup));
+				() -> () -> modBus.addListener(ClientProxy::onClientSetup));
 
 		MinecraftForge.EVENT_BUS.register(GIRInit.class);
 		DistExecutor.runWhenOn(Dist.CLIENT,
@@ -52,7 +49,7 @@ public class GIRMain {
 		}
 		final Gson gson = new Gson();
 		try (final Reader reader = Files.newBufferedReader(path)) {
-			gson.fromJson(reader, BlockLists.class).addToList(GIRInit.blocksToRegister);
+			gson.fromJson(reader, BlockLists.class).registerInto();
 		} catch (final IOException e) {
 			LOG.error("Could not read {}", path, e);
 		} catch (final JsonSyntaxException e) {
