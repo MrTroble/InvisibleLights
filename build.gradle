@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
@@ -42,7 +42,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.20.1'
+    addGameVersion '1.20.2'
   }
 }
 
@@ -53,7 +53,7 @@ archivesBaseName = 'invisiblelights'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.20.1'
+    mappings channel: 'official', version: '1.20.2'
     runs {
         client {
             workingDirectory project.file('run')
@@ -80,7 +80,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.4.0'
+    minecraft 'net.minecraftforge:forge:1.20.2-48.1.0'
 }
 
 jar {
