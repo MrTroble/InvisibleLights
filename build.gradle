@@ -13,7 +13,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.171'
+    id 'net.neoforged.gradle.userdev' version '7.1.26'
 }
 
 apply plugin: "com.matthewprenger.cursegradle"
@@ -44,7 +44,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.21.5'
+    addGameVersion '1.21.8'
   }
 }
 
@@ -70,7 +70,7 @@ runs {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.5.97'
+    implementation 'net.neoforged:neoforge:21.8.53'
 }
 
 jar {
