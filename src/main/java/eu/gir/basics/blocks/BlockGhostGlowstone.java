@@ -9,6 +9,7 @@ public class BlockGhostGlowstone extends Block {
 	public BlockGhostGlowstone() {
 		super(Block.Properties.create(Material.GLASS)
 				.sound(SoundType.GLASS)
-				.hardnessAndResistance(0.3f));
+				.hardnessAndResistance(0.3f)
+				.notSolid());
 	}
 }
