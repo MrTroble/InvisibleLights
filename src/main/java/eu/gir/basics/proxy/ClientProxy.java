@@ -8,14 +8,11 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import eu.gir.basics.blocks.BlockCustomLight;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
-import eu.gir.basics.init.GIRInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShapeRenderer;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -33,7 +30,6 @@ public final class ClientProxy {
 	private ClientProxy() {}
 
 	public static void onClientSetup(final FMLClientSetupEvent event) {
-		ItemBlockRenderTypes.setRenderLayer(GIRInit.GHOST_GLOWSTONE.get(), ChunkSectionLayer.CUTOUT_MIPPED);
 	}
 
 	private static final int RADIUS = 50;
@@ -125,11 +121,12 @@ public final class ClientProxy {
 		if (playerPlacedBlocks.isEmpty())
 			return;
 
-		final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+		final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().position();
 		final PoseStack poseStack = new PoseStack();
 
 		final MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
-		final VertexConsumer builder = buffers.getBuffer(RenderType.lines());
+		final RenderType lines = RenderTypes.LINES;
+		final VertexConsumer builder = buffers.getBuffer(lines);
 
 		synchronized (playerPlacedBlocks) {
 			playerPlacedBlocks.forEach(posIn -> {
@@ -137,13 +134,40 @@ public final class ClientProxy {
 				final float[] color = blockIn instanceof BlockLightBlocker
 						? COLOR_BLOCKER
 						: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-				ShapeRenderer.renderLineBox(poseStack.last(), builder,
-						posIn.getX() - view.x, posIn.getY() - view.y, posIn.getZ() - view.z,
-						posIn.getX() + 1.0 - view.x, posIn.getY() + 1.0 - view.y, posIn.getZ() + 1.0 - view.z,
+				renderLineBox(poseStack.last(), builder,
+						(float) (posIn.getX() - view.x), (float) (posIn.getY() - view.y), (float) (posIn.getZ() - view.z),
+						(float) (posIn.getX() + 1.0 - view.x), (float) (posIn.getY() + 1.0 - view.y), (float) (posIn.getZ() + 1.0 - view.z),
 						color[0], color[1], color[2], color[3]);
 			});
 		}
 
-		buffers.endBatch(RenderType.lines());
+		buffers.endBatch(lines);
+	}
+
+	private static void renderLineBox(final PoseStack.Pose pose, final VertexConsumer vc,
+			final float x1, final float y1, final float z1,
+			final float x2, final float y2, final float z2,
+			final float r, final float g, final float b, final float a) {
+		line(pose, vc, x1, y1, z1, x2, y1, z1, r, g, b, a, 1f, 0f, 0f);
+		line(pose, vc, x1, y1, z1, x1, y2, z1, r, g, b, a, 0f, 1f, 0f);
+		line(pose, vc, x1, y1, z1, x1, y1, z2, r, g, b, a, 0f, 0f, 1f);
+		line(pose, vc, x2, y1, z1, x2, y2, z1, r, g, b, a, 0f, 1f, 0f);
+		line(pose, vc, x2, y1, z1, x2, y1, z2, r, g, b, a, 0f, 0f, 1f);
+		line(pose, vc, x1, y2, z1, x2, y2, z1, r, g, b, a, 1f, 0f, 0f);
+		line(pose, vc, x1, y2, z1, x1, y2, z2, r, g, b, a, 0f, 0f, 1f);
+		line(pose, vc, x1, y1, z2, x2, y1, z2, r, g, b, a, 1f, 0f, 0f);
+		line(pose, vc, x1, y1, z2, x1, y2, z2, r, g, b, a, 0f, 1f, 0f);
+		line(pose, vc, x2, y2, z1, x2, y2, z2, r, g, b, a, 0f, 0f, 1f);
+		line(pose, vc, x2, y1, z2, x2, y2, z2, r, g, b, a, 0f, 1f, 0f);
+		line(pose, vc, x1, y2, z2, x2, y2, z2, r, g, b, a, 1f, 0f, 0f);
+	}
+
+	private static void line(final PoseStack.Pose pose, final VertexConsumer vc,
+			final float ax, final float ay, final float az,
+			final float bx, final float by, final float bz,
+			final float r, final float g, final float bCol, final float a,
+			final float nx, final float ny, final float nz) {
+		vc.addVertex(pose, ax, ay, az).setColor(r, g, bCol, a).setNormal(pose, nx, ny, nz).setLineWidth(1f);
+		vc.addVertex(pose, bx, by, bz).setColor(r, g, bCol, a).setNormal(pose, nx, ny, nz).setLineWidth(1f);
 	}
 }
