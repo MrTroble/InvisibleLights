@@ -33,7 +33,7 @@ public class GIRMain {
 		final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 		GIRInit.BLOCKS.register(modBus);
 		GIRInit.ITEMS.register(modBus);
-		modBus.addListener(GIRInit::registerCreativeTab);
+		GIRInit.CREATIVE_MODE_TABS.register(modBus);
 		DistExecutor.runWhenOn(Dist.CLIENT,
 				() -> () -> modBus.addListener(ClientProxy::onClientSetup));
 
