@@ -3,7 +3,7 @@ package eu.gir.basics.blocks;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.math.BlockPos;
@@ -19,11 +19,11 @@ public class BlockCustomState extends BlockCustomLight {
 	}
 
 	@Override
-	protected void fillStateContainer(final StateContainer.Builder<Block, IBlockState> builder) {
+	protected void fillStateContainer(final StateContainer.Builder<Block, BlockState> builder) {
 		builder.add(POWERED);
 	}
 
-	private void updatePowerState(final IBlockState state, final World worldIn, final BlockPos pos) {
+	private void updatePowerState(final BlockState state, final World worldIn, final BlockPos pos) {
 		if (worldIn.isRemote)
 			return;
 		final boolean lastPowered = state.get(POWERED);
@@ -35,20 +35,20 @@ public class BlockCustomState extends BlockCustomLight {
 	}
 
 	@Override
-	public void onBlockAdded(final IBlockState state, final World worldIn, final BlockPos pos,
-			final IBlockState oldState) {
-		super.onBlockAdded(state, worldIn, pos, oldState);
+	public void onBlockAdded(final BlockState state, final World worldIn, final BlockPos pos,
+			final BlockState oldState, final boolean isMoving) {
+		super.onBlockAdded(state, worldIn, pos, oldState, isMoving);
 		updatePowerState(state, worldIn, pos);
 	}
 
 	@Override
-	public void neighborChanged(final IBlockState state, final World worldIn, final BlockPos pos,
-			final Block blockIn, final BlockPos fromPos) {
+	public void neighborChanged(final BlockState state, final World worldIn, final BlockPos pos,
+			final Block blockIn, final BlockPos fromPos, final boolean isMoving) {
 		updatePowerState(state, worldIn, pos);
 	}
 
 	@Override
-	public void tick(final IBlockState state, final World worldIn, final BlockPos pos, final Random rand) {
+	public void tick(final BlockState state, final World worldIn, final BlockPos pos, final Random rand) {
 		if (worldIn.isRemote)
 			return;
 		if (!worldIn.isBlockPowered(pos) && state.get(POWERED)) {

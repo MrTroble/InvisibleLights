@@ -9,9 +9,9 @@ import eu.gir.basics.blocks.BlockGhostGlowstone;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -75,7 +75,7 @@ public class GIRInit {
 	public static void registerItems(final RegistryEvent.Register<Item> event) {
 		final IForgeRegistry<Item> registry = event.getRegistry();
 		blocksToRegister.forEach(block -> {
-			final ItemBlock item = new ItemBlock(block, new Item.Properties().group(LIGHT_TAB));
+			final BlockItem item = new BlockItem(block, new Item.Properties().group(LIGHT_TAB));
 			item.setRegistryName(block.getRegistryName());
 			registry.register(item);
 		});
@@ -85,7 +85,7 @@ public class GIRInit {
 	public static void blockBreakEven(final BreakEvent event) {
 		if (!(event.getState().getBlock() instanceof BlockInvisibleLight))
 			return;
-		final EntityPlayer player = event.getPlayer();
+		final PlayerEntity player = event.getPlayer();
 		final Item item = player.getHeldItemMainhand().getItem();
 		if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
 			event.setCanceled(true);

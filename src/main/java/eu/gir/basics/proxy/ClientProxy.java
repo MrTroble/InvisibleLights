@@ -2,19 +2,21 @@ package eu.gir.basics.proxy;
 
 import java.util.ArrayList;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+
 import eu.gir.basics.blocks.BlockCustomLight;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -51,7 +53,7 @@ public final class ClientProxy {
 
 	private static final ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
 	private static boolean dirty = true;
-	private static BlockPos lastPosition = BlockPos.ORIGIN;
+	private static BlockPos lastPosition = BlockPos.ZERO;
 
 	public static void refill(final BlockPos pos, final World world) {
 		lastPosition = pos;
@@ -75,19 +77,17 @@ public final class ClientProxy {
 
 	@SubscribeEvent
 	public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
-		final EntityPlayer player = render.getPlayer();
+		final RayTraceResult result = render.getTarget();
+		if (!(result instanceof BlockRayTraceResult))
+			return;
+		final PlayerEntity player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
 		final World world = player.getEntityWorld();
 		if (world == null)
 			return;
-		final RayTraceResult result = render.getTarget();
-		if (result == null)
-			return;
-		final BlockPos pos = result.getBlockPos();
-		if (pos == null)
-			return;
-		final IBlockState state = world.getBlockState(pos);
+		final BlockPos pos = ((BlockRayTraceResult) result).getPos();
+		final BlockState state = world.getBlockState(pos);
 		if (state.getBlock() instanceof BlockInvisibleLight)
 			render.setCanceled(true);
 	}
@@ -97,7 +97,7 @@ public final class ClientProxy {
 		final Entity placerEntity = event.getEntity();
 		if (placerEntity == null)
 			return;
-		final EntityPlayerSP player = Minecraft.getInstance().player;
+		final ClientPlayerEntity player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
 		final BlockPos playerPos = player.getPosition();
@@ -119,7 +119,7 @@ public final class ClientProxy {
 
 	@SubscribeEvent
 	public static void renderWorldLastEvent(final RenderWorldLastEvent event) {
-		final EntityPlayerSP sp = Minecraft.getInstance().player;
+		final ClientPlayerEntity sp = Minecraft.getInstance().player;
 		if (sp == null)
 			return;
 		final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
@@ -140,7 +140,7 @@ public final class ClientProxy {
 			d2 = sp.lastTickPosY + (sp.posY - sp.lastTickPosY) * part;
 			d3 = sp.lastTickPosZ + (sp.posZ - sp.lastTickPosZ) * part;
 
-			GlStateManager.disableTexture2D();
+			GlStateManager.disableTexture();
 			synchronized (playerPlacedBlocks) {
 				playerPlacedBlocks.forEach(posIn -> {
 					final Block blockIn = sp.world.getBlockState(posIn).getBlock();
@@ -150,7 +150,7 @@ public final class ClientProxy {
 					ClientProxy.render(posIn, color);
 				});
 			}
-			GlStateManager.enableTexture2D();
+			GlStateManager.enableTexture();
 		} else if (!playerPlacedBlocks.isEmpty()) {
 			playerPlacedBlocks.clear();
 			dirty = true;
