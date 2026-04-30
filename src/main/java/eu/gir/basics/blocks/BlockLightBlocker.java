@@ -10,7 +10,7 @@ public class BlockLightBlocker extends BlockInvisibleLight {
 	}
 
 	@Override
-	protected int getLightBlock(final BlockState state) {
+	protected int getLightDampening(final BlockState state) {
 		return 15;
 	}
 }

@@ -22,8 +22,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 public final class ClientProxy {
 
@@ -89,14 +89,14 @@ public final class ClientProxy {
 	}
 
 	@SubscribeEvent
-	public static void blockBreakEvent(final BreakEvent event) {
+	public static void blockBreakEvent(final BreakBlockEvent event) {
 		synchronized (playerPlacedBlocks) {
 			playerPlacedBlocks.remove(event.getPos());
 		}
 	}
 
 	@SubscribeEvent
-	public static void renderWorldLastEvent(final RenderLevelStageEvent.AfterParticles event) {
+	public static void renderWorldLastEvent(final RenderLevelStageEvent.AfterTranslucentParticles event) {
 		final LocalPlayer sp = Minecraft.getInstance().player;
 		if (sp == null)
 			return;

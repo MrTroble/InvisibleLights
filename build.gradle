@@ -44,7 +44,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.21.11'
+    addGameVersion '26.1'
   }
 }
 
@@ -52,7 +52,7 @@ version = ver
 group = 'eu.gir'
 base.archivesName = 'invisiblelights'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 runs {
     configureEach {
@@ -70,7 +70,7 @@ runs {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.11.42'
+    implementation 'net.neoforged:neoforge:26.1.2.31-beta'
 }
 
 jar {
