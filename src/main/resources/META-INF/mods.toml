@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[25,)"
+issueTrackerURL="https://discord.gg/Va5P7KBry6"
+
+[[mods]]
+modId="invisiblelights"
+version="${version}"
+displayName="Invisible Lights"
+authors="MrTroble, Jeronimo"
+credits="German Immersive Railroading Community"
+description='''
+Adds invisible lights.
+'''
+
+[[dependencies.invisiblelights]]
+    modId="forge"
+    mandatory=true
+    versionRange="[25,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.invisiblelights]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2]"
+    ordering="NONE"
+    side="BOTH"

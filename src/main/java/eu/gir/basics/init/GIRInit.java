@@ -9,29 +9,26 @@ import eu.gir.basics.blocks.BlockGhostGlowstone;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
 import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class GIRInit {
-	
-	public static final CreativeTabs LIGHT_TAB = new CreativeTabs("invisiblelights") {
-		
+
+	public static final ItemGroup LIGHT_TAB = new ItemGroup("invisiblelights") {
 		@Override
-		public ItemStack getTabIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(INVISIBLE_LIGHTS_2);
 		}
 	};
-	
+
 	public static final Block INVISIBLE_LIGHTS_2 = new BlockInvisibleLight(2);
 	public static final Block INVISIBLE_LIGHTS_3 = new BlockInvisibleLight(3);
 	public static final Block INVISIBLE_LIGHTS_4 = new BlockInvisibleLight(4);
@@ -48,69 +45,50 @@ public class GIRInit {
 	public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
 	public static final Block BLOCKER = new BlockLightBlocker();
 	public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
-	
+
 	public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
-	public static final ArrayList<Item> itemsToRegister = new ArrayList<>();
-	
+
 	public static void init() {
-		final Field[] fields = GIRInit.class.getFields();
-		for (final Field field : fields) {
+		for (final Field field : GIRInit.class.getFields()) {
 			final int modifiers = field.getModifiers();
-			if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && Modifier.isPublic(modifiers)) {
+			if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers))
+				continue;
+			try {
+				final Object obj = field.get(null);
+				if (!(obj instanceof Block))
+					continue;
+				final Block block = (Block) obj;
 				final String name = field.getName().toLowerCase().replace("_", "");
-				try {
-					final Object obj = field.get(null);
-					if (obj instanceof Block) {
-						final Block block = (Block) obj;
-						block.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
-						block.setUnlocalizedName(name);
-						blocksToRegister.add(block);
-						if (block instanceof ITileEntityProvider) {
-							final ITileEntityProvider provider = (ITileEntityProvider) block;
-							try {
-								final Class<? extends TileEntity> tileclass = provider.createNewTileEntity(null, 0).getClass();
-								TileEntity.register(tileclass.getSimpleName().toLowerCase(), tileclass);
-							} catch (final NullPointerException ex) {
-								GIRMain.LOG.trace("All tileentity provide need to call back a default entity if the world is null!", ex);
-							}
-						}
-					}
-					if (obj instanceof Item) {
-						final Item item = (Item) obj;
-						item.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
-						item.setUnlocalizedName(name);
-						itemsToRegister.add(item);
-					}
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
+				block.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
+				blocksToRegister.add(block);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				GIRMain.LOG.error("Could not access field {}", field.getName(), e);
 			}
 		}
 	}
-	
-	@SubscribeEvent
-	public static void registerBlock(final RegistryEvent.Register<Block> event) {
+
+	public static void registerBlocks(final RegistryEvent.Register<Block> event) {
 		final IForgeRegistry<Block> registry = event.getRegistry();
 		blocksToRegister.forEach(registry::register);
 	}
-	
-	@SubscribeEvent
-	public static void registerItem(final RegistryEvent.Register<Item> event) {
+
+	public static void registerItems(final RegistryEvent.Register<Item> event) {
 		final IForgeRegistry<Item> registry = event.getRegistry();
-		blocksToRegister.forEach(block -> registry.register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
-		itemsToRegister.forEach(registry::register);
+		blocksToRegister.forEach(block -> {
+			final ItemBlock item = new ItemBlock(block, new Item.Properties().group(LIGHT_TAB));
+			item.setRegistryName(block.getRegistryName());
+			registry.register(item);
+		});
 	}
-	
+
 	@SubscribeEvent
 	public static void blockBreakEven(final BreakEvent event) {
-		final Block block = event.getState().getBlock();
-		if (block instanceof BlockInvisibleLight) {
-			final EntityPlayer player = event.getPlayer();
-			final Item item = player.getHeldItemMainhand().getItem();
-			if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
-				event.setCanceled(true);
-				return;
-			}
+		if (!(event.getState().getBlock() instanceof BlockInvisibleLight))
+			return;
+		final EntityPlayer player = event.getPlayer();
+		final Item item = player.getHeldItemMainhand().getItem();
+		if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
+			event.setCanceled(true);
 		}
 	}
 }

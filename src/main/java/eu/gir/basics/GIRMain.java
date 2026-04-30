@@ -5,62 +5,56 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import eu.gir.basics.init.GIRInit;
-import eu.gir.basics.proxy.CommonProxy;
+import eu.gir.basics.proxy.ClientProxy;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 
-@Mod(modid = GIRMain.MODID, acceptedMinecraftVersions = "[1.12.2]")
+
+@Mod(GIRMain.MODID)
 public class GIRMain {
-	
-	@Instance
-	private static GIRMain instance;
+
 	public static final String MODID = "invisiblelights";
-	
-	public static GIRMain getInstance() {
-		return instance;
+	public static final Logger LOG = LogManager.getLogger(MODID);
+
+	public GIRMain() {
+		GIRInit.init();
+		loadCustomBlocks();
+
+		final FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
+		ctx.getModEventBus().addGenericListener(Block.class, GIRInit::registerBlocks);
+		ctx.getModEventBus().addGenericListener(Item.class, GIRInit::registerItems);
+
+		MinecraftForge.EVENT_BUS.register(GIRInit.class);
+		DistExecutor.runWhenOn(Dist.CLIENT,
+				() -> () -> MinecraftForge.EVENT_BUS.register(ClientProxy.class));
 	}
-	
-	@SidedProxy(serverSide = "eu.gir.basics.proxy.CommonProxy", clientSide = "eu.gir.basics.proxy.ClientProxy")
-	public static CommonProxy PROXY;
-	public static Logger LOG;
-	
-	@EventHandler
-	public void preinit(final FMLPreInitializationEvent event) {
-		LOG = event.getModLog();
-		PROXY.preinit(event);
-		final Path path = event.getModConfigurationDirectory().toPath().resolve("gircLightBlocks.json");
+
+	private void loadCustomBlocks() {
+		final Path path = FMLPaths.CONFIGDIR.get().resolve("gircLightBlocks.json");
 		if (Files.notExists(path)) {
-			LOG.debug("Did not find {} skipping!", path.toString());
+			LOG.debug("Did not find {} skipping!", path);
 			return;
 		}
 		final Gson gson = new Gson();
 		try (final Reader reader = Files.newBufferedReader(path)) {
 			gson.fromJson(reader, BlockLists.class).addToList(GIRInit.blocksToRegister);
 		} catch (final IOException e) {
-			e.printStackTrace();
+			LOG.error("Could not read {}", path, e);
 		} catch (final JsonSyntaxException e) {
 			LOG.error("Could not parse json! Error {}", e.getMessage());
 		}
-	}
-	
-	@EventHandler
-	public void init(final FMLInitializationEvent event) {
-		PROXY.init(event);
-	}
-	
-	@EventHandler
-	public void postinit(final FMLPostInitializationEvent event) {
-		PROXY.postinit(event);
 	}
 }

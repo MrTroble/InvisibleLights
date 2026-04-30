@@ -1,8 +1,7 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
         maven { url "https://plugins.gradle.org/m2/" }
-        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -16,6 +15,18 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 apply plugin: "com.matthewprenger.cursegradle"
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Forge'
+        url = 'https://maven.minecraftforge.net/'
+    }
+    maven {
+        name = 'Mojang'
+        url = 'https://libraries.minecraft.net/'
+    }
+}
 
 def ver = System.getenv("APPVEYOR_BUILD_VERSION")
 if(ver == null)
@@ -41,23 +52,34 @@ archivesBaseName = 'invisiblelights'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20171003-1.12'
+    mappings channel: 'snapshot', version: '20190530-1.13.2'
     runs {
         client {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            mods {
+                invisiblelights {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
+            workingDirectory project.file('run')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            mods {
+                invisiblelights {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
-dependencies {   
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
 }
 
 jar {
@@ -75,12 +97,14 @@ jar {
 }
 
 processResources {
+    inputs.property "version", ver
+
     from(sourceSets.main.resources.srcDirs) {
-        include "mcmod.info"               
-        expand "version":ver
+        include "META-INF/mods.toml"
+        expand "version": ver
     }
     from(sourceSets.main.resources.srcDirs) {
-        exclude "mcmod.info"
+        exclude "META-INF/mods.toml"
     }
 }
 
