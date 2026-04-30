@@ -42,7 +42,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.20.2'
+    addGameVersion '1.20.4'
   }
 }
 
@@ -52,10 +52,12 @@ archivesBaseName = 'invisiblelights'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+sourceSets.main.output.resourcesDir = sourceSets.main.java.classesDirectory
+
 minecraft {
-    mappings channel: 'official', version: '1.20.2'
+    mappings channel: 'official', version: '1.20.4'
     runs {
-        client {
+        configureEach {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
@@ -66,21 +68,18 @@ minecraft {
             }
         }
 
+        client {
+            workingDirectory project.file('run')
+        }
+
         server {
             workingDirectory project.file('run')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                invisiblelights {
-                    source sourceSets.main
-                }
-            }
         }
     }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.2-48.1.0'
+    minecraft 'net.minecraftforge:forge:1.20.4-49.1.4'
 }
 
 jar {
