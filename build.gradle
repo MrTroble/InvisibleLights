@@ -42,7 +42,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.18'
+    addGameVersion '1.18.1'
   }
 }
 
@@ -53,7 +53,7 @@ archivesBaseName = 'invisiblelights'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.18'
+    mappings channel: 'official', version: '1.18.1'
     runs {
         client {
             workingDirectory project.file('run')
@@ -80,7 +80,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18-38.0.17'
+    minecraft 'net.minecraftforge:forge:1.18.1-39.1.2'
 }
 
 jar {
