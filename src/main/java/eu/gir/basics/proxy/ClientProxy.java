@@ -18,6 +18,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -135,10 +136,10 @@ public final class ClientProxy {
 				refill(pos, sp.world);
 			if (playerPlacedBlocks.isEmpty())
 				return;
-			final double part = event.getPartialTicks();
-			d1 = sp.lastTickPosX + (sp.posX - sp.lastTickPosX) * part;
-			d2 = sp.lastTickPosY + (sp.posY - sp.lastTickPosY) * part;
-			d3 = sp.lastTickPosZ + (sp.posZ - sp.lastTickPosZ) * part;
+			final Vec3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+			d1 = view.x;
+			d2 = view.y;
+			d3 = view.z;
 
 			GlStateManager.disableTexture();
 			synchronized (playerPlacedBlocks) {
