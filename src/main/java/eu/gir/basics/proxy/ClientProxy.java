@@ -18,15 +18,12 @@ import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.client.event.ExtractBlockOutlineRenderStateEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
@@ -72,16 +69,8 @@ public final class ClientProxy {
 	}
 
 	@SubscribeEvent
-	public static void renderOverlayEvent(final RenderHighlightEvent.Block event) {
-		final BlockHitResult result = event.getTarget();
-		final Player player = Minecraft.getInstance().player;
-		if (player == null)
-			return;
-		final Level level = player.level();
-		if (level == null)
-			return;
-		final BlockState state = level.getBlockState(result.getBlockPos());
-		if (state.getBlock() instanceof BlockInvisibleLight)
+	public static void renderOverlayEvent(final ExtractBlockOutlineRenderStateEvent event) {
+		if (event.getBlockState().getBlock() instanceof BlockInvisibleLight)
 			event.setCanceled(true);
 	}
 
@@ -148,7 +137,7 @@ public final class ClientProxy {
 				final float[] color = blockIn instanceof BlockLightBlocker
 						? COLOR_BLOCKER
 						: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-				ShapeRenderer.renderLineBox(poseStack, builder,
+				ShapeRenderer.renderLineBox(poseStack.last(), builder,
 						posIn.getX() - view.x, posIn.getY() - view.y, posIn.getZ() - view.z,
 						posIn.getX() + 1.0 - view.x, posIn.getY() + 1.0 - view.y, posIn.getZ() + 1.0 - view.z,
 						color[0], color[1], color[2], color[3]);
