@@ -1,8 +1,10 @@
 package eu.gir.basics.blocks;
 
+import net.minecraft.world.level.block.Block;
+
 public class BlockCustomLight extends BlockInvisibleLight {
 
-	public BlockCustomLight(final int light) {
-		super(light);
+	public BlockCustomLight(final Block.Properties props, final int light) {
+		super(props, light);
 	}
 }

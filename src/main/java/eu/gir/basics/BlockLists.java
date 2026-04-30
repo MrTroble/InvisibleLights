@@ -12,7 +12,7 @@ public final class BlockLists {
 	private List<String> statebased;
 
 	public void registerInto() {
-		stateless.forEach(name -> GIRInit.register(name, () -> new BlockCustomLight(0)));
-		statebased.forEach(name -> GIRInit.register(name, () -> new BlockCustomState(0)));
+		stateless.forEach(name -> GIRInit.register(name, props -> new BlockCustomLight(props, 0)));
+		statebased.forEach(name -> GIRInit.register(name, props -> new BlockCustomState(props, 0)));
 	}
 }
