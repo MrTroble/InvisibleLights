@@ -57,7 +57,7 @@ public class GIRInit {
 		event.registerCreativeModeTab(new ResourceLocation(GIRMain.MODID, "invisiblelights"), builder -> builder
 				.title(Component.translatable("itemGroup.invisiblelights"))
 				.icon(() -> new ItemStack(INVISIBLE_LIGHTS_2.get()))
-				.displayItems((flags, output, hasPermissions) -> ITEMS.getEntries().forEach(item -> output.accept(item.get()))));
+				.displayItems((params, output) -> ITEMS.getEntries().forEach(item -> output.accept(item.get()))));
 	}
 
 	@SubscribeEvent
