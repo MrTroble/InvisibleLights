@@ -44,7 +44,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.21.3'
+    addGameVersion '1.21.4'
   }
 }
 
@@ -70,7 +70,7 @@ runs {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.3.96'
+    implementation 'net.neoforged:neoforge:21.4.157'
 }
 
 jar {
