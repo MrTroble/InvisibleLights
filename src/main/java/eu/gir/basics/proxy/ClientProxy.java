@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.DrawSelectionEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -113,7 +113,7 @@ public final class ClientProxy {
 	}
 
 	@SubscribeEvent
-	public static void renderWorldLastEvent(final RenderWorldLastEvent event) {
+	public static void renderWorldLastEvent(final RenderLevelLastEvent event) {
 		final LocalPlayer sp = Minecraft.getInstance().player;
 		if (sp == null)
 			return;
@@ -139,7 +139,7 @@ public final class ClientProxy {
 			return;
 
 		final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-		final PoseStack poseStack = event.getMatrixStack();
+		final PoseStack poseStack = event.getPoseStack();
 		poseStack.pushPose();
 		poseStack.translate(-view.x, -view.y, -view.z);
 

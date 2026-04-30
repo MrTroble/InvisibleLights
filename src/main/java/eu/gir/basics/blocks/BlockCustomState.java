@@ -31,7 +31,7 @@ public class BlockCustomState extends BlockCustomLight {
 		if (level.hasNeighborSignal(pos) && !lastPowered) {
 			level.setBlock(pos, state.setValue(POWERED, true), 3);
 		} else if (!level.hasNeighborSignal(pos) && lastPowered) {
-			level.getBlockTicks().scheduleTick(pos, this, 4);
+			level.scheduleTick(pos, this, 4);
 		}
 	}
 
