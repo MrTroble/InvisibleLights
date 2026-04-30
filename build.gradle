@@ -42,7 +42,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
-    addGameVersion '1.20.4'
+    addGameVersion '1.20.6'
   }
 }
 
@@ -50,12 +50,22 @@ version = ver
 group = 'eu.gir'
 archivesBaseName = 'invisiblelights'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 sourceSets.main.output.resourcesDir = sourceSets.main.java.classesDirectory
 
+configurations.all {
+    resolutionStrategy {
+        force 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.6-50.1.20'
+}
+
 minecraft {
-    mappings channel: 'official', version: '1.20.4'
+    mappings channel: 'official', version: '1.20.6'
     runs {
         configureEach {
             workingDirectory project.file('run')
@@ -78,9 +88,6 @@ minecraft {
     }
 }
 
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.4-49.1.4'
-}
 
 jar {
     manifest {
@@ -104,4 +111,3 @@ processResources {
     }
 }
 
-jar.finalizedBy('reobfJar')

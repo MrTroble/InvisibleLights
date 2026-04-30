@@ -20,7 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -141,9 +140,7 @@ public final class ClientProxy {
 			return;
 
 		final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-		final PoseStack poseStack = event.getPoseStack();
-		poseStack.pushPose();
-		poseStack.translate(-view.x, -view.y, -view.z);
+		final PoseStack poseStack = new PoseStack();
 
 		final MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 		final VertexConsumer builder = buffers.getBuffer(RenderType.lines());
@@ -154,15 +151,13 @@ public final class ClientProxy {
 				final float[] color = blockIn instanceof BlockLightBlocker
 						? COLOR_BLOCKER
 						: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-				final AABB box = new AABB(
-						posIn.getX(), posIn.getY(), posIn.getZ(),
-						posIn.getX() + 1.0, posIn.getY() + 1.0, posIn.getZ() + 1.0);
-				net.minecraft.client.renderer.LevelRenderer.renderLineBox(poseStack, builder, box,
+				net.minecraft.client.renderer.LevelRenderer.renderLineBox(poseStack, builder,
+						posIn.getX() - view.x, posIn.getY() - view.y, posIn.getZ() - view.z,
+						posIn.getX() + 1.0 - view.x, posIn.getY() + 1.0 - view.y, posIn.getZ() + 1.0 - view.z,
 						color[0], color[1], color[2], color[3]);
 			});
 		}
 
-		poseStack.popPose();
 		buffers.endBatch(RenderType.lines());
 	}
 }
