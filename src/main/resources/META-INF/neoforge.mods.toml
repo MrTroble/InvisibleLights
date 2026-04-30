@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[51,)"
+loaderVersion="[4,)"
 license="Apache-2.0"
 issueTrackerURL="https://discord.gg/Va5P7KBry6"
 
@@ -14,15 +14,15 @@ Adds invisible lights.
 '''
 
 [[dependencies.invisiblelights]]
-    modId="forge"
-    mandatory=true
-    versionRange="[51,)"
+    modId="neoforge"
+    type="required"
+    versionRange="[21.0,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.invisiblelights]]
     modId="minecraft"
-    mandatory=true
+    type="required"
     versionRange="[1.21]"
     ordering="NONE"
     side="BOTH"

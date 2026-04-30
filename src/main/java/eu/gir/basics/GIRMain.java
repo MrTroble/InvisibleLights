@@ -13,13 +13,12 @@ import com.google.gson.JsonSyntaxException;
 
 import eu.gir.basics.init.GIRInit;
 import eu.gir.basics.proxy.ClientProxy;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(GIRMain.MODID)
 public class GIRMain {
@@ -27,19 +26,19 @@ public class GIRMain {
 	public static final String MODID = "invisiblelights";
 	public static final Logger LOG = LogManager.getLogger(MODID);
 
-	public GIRMain() {
+	public GIRMain(final IEventBus modBus, final ModContainer container, final Dist dist) {
 		loadCustomBlocks();
 
-		final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 		GIRInit.BLOCKS.register(modBus);
 		GIRInit.ITEMS.register(modBus);
 		GIRInit.CREATIVE_MODE_TABS.register(modBus);
-		DistExecutor.runWhenOn(Dist.CLIENT,
-				() -> () -> modBus.addListener(ClientProxy::onClientSetup));
 
-		MinecraftForge.EVENT_BUS.register(GIRInit.class);
-		DistExecutor.runWhenOn(Dist.CLIENT,
-				() -> () -> MinecraftForge.EVENT_BUS.register(ClientProxy.class));
+		NeoForge.EVENT_BUS.register(GIRInit.class);
+
+		if (dist.isClient()) {
+			modBus.addListener(ClientProxy::onClientSetup);
+			NeoForge.EVENT_BUS.register(ClientProxy.class);
+		}
 	}
 
 	private void loadCustomBlocks() {
