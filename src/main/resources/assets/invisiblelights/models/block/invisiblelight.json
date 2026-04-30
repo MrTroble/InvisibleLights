@@ -1,6 +1,6 @@
 {
     "textures": {
-        "particle": "invisiblelights:items/invisiblelights"
+        "particle": "invisiblelights:item/invisiblelights"
     },
     "elements": []
 }
