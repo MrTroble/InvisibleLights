@@ -1,5 +1,6 @@
 modLoader="javafml"
 loaderVersion="[36,)"
+license="Apache-2.0"
 issueTrackerURL="https://discord.gg/Va5P7KBry6"
 
 [[mods]]
