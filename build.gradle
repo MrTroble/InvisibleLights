@@ -52,7 +52,7 @@ archivesBaseName = 'invisiblelights'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200119-1.14.4'
+    mappings channel: 'snapshot', version: '20211108-1.15.1'
     runs {
         client {
             workingDirectory project.file('run')
@@ -79,7 +79,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.2.28'
+    minecraft 'net.minecraftforge:forge:1.15.2-31.2.60'
 }
 
 jar {

@@ -36,6 +36,8 @@ public class GIRMain {
 		final FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
 		ctx.getModEventBus().addGenericListener(Block.class, GIRInit::registerBlocks);
 		ctx.getModEventBus().addGenericListener(Item.class, GIRInit::registerItems);
+		DistExecutor.runWhenOn(Dist.CLIENT,
+				() -> () -> ctx.getModEventBus().addListener(ClientProxy::onClientSetup));
 
 		MinecraftForge.EVENT_BUS.register(GIRInit.class);
 		DistExecutor.runWhenOn(Dist.CLIENT,

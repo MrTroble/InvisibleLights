@@ -5,7 +5,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -19,22 +18,13 @@ public class BlockInvisibleLight extends Block {
 	public BlockInvisibleLight(final int light) {
 		super(Block.Properties.create(Material.EARTH)
 				.lightValue(light)
-				.hardnessAndResistance(0.5f));
-	}
-
-	@Override
-	public boolean isSolid(final BlockState state) {
-		return false;
+				.hardnessAndResistance(0.5f)
+				.notSolid());
 	}
 
 	@Override
 	public BlockRenderType getRenderType(final BlockState state) {
 		return BlockRenderType.INVISIBLE;
-	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

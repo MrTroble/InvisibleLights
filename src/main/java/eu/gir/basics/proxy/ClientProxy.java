@@ -2,15 +2,20 @@ package eu.gir.basics.proxy;
 
 import java.util.ArrayList;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
 
 import eu.gir.basics.blocks.BlockCustomLight;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
+import eu.gir.basics.init.GIRInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,35 +27,29 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @OnlyIn(Dist.CLIENT)
 public final class ClientProxy {
 
 	private ClientProxy() {}
 
+	public static void onClientSetup(final FMLClientSetupEvent event) {
+		RenderTypeLookup.setRenderLayer(GIRInit.GHOST_GLOWSTONE, RenderType.getCutoutMipped());
+	}
+
 	private static final int RADIUS = 50;
 	private static final int UPDATE_SPHERE = 50;
 	private static final int RADIUSPLAYER = RADIUS * RADIUS + 10;
-	private static final AxisAlignedBB FULL_CUBE = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-
-	private static double d1;
-	private static double d2;
-	private static double d3;
 
 	private static final float[] COLOR_NORMAL = new float[] { 0, 1, 0, 1 };
 	private static final float[] COLOR_BLOCKER = new float[] { 1, 0, 0, 1 };
 	private static final float[] COLOR_CUSTOM = new float[] { 1, 0.5f, 0, 1 };
-
-	public static void render(final BlockPos pos1, final float[] color) {
-		WorldRenderer.drawSelectionBoundingBox(
-				FULL_CUBE.offset(pos1.getX() - d1, pos1.getY() - d2, pos1.getZ() - d3),
-				color[0], color[1], color[2], color[3]);
-	}
 
 	private static final ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
 	private static boolean dirty = true;
@@ -77,20 +76,17 @@ public final class ClientProxy {
 	}
 
 	@SubscribeEvent
-	public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
-		final RayTraceResult result = render.getTarget();
-		if (!(result instanceof BlockRayTraceResult))
-			return;
+	public static void renderOverlayEvent(final DrawHighlightEvent.HighlightBlock event) {
+		final BlockRayTraceResult result = event.getTarget();
 		final PlayerEntity player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
 		final World world = player.getEntityWorld();
 		if (world == null)
 			return;
-		final BlockPos pos = ((BlockRayTraceResult) result).getPos();
-		final BlockState state = world.getBlockState(pos);
+		final BlockState state = world.getBlockState(result.getPos());
 		if (state.getBlock() instanceof BlockInvisibleLight)
-			render.setCanceled(true);
+			event.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -124,37 +120,49 @@ public final class ClientProxy {
 		if (sp == null)
 			return;
 		final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
-		if (block instanceof BlockInvisibleLight) {
-			final BlockPos pos = sp.getPosition();
-			if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
-				synchronized (playerPlacedBlocks) {
-					playerPlacedBlocks.clear();
-				}
+		if (!(block instanceof BlockInvisibleLight)) {
+			if (!playerPlacedBlocks.isEmpty()) {
+				playerPlacedBlocks.clear();
 				dirty = true;
 			}
-			if (dirty)
-				refill(pos, sp.world);
-			if (playerPlacedBlocks.isEmpty())
-				return;
-			final Vec3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-			d1 = view.x;
-			d2 = view.y;
-			d3 = view.z;
+			return;
+		}
 
-			GlStateManager.disableTexture();
+		final BlockPos pos = sp.getPosition();
+		if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
 			synchronized (playerPlacedBlocks) {
-				playerPlacedBlocks.forEach(posIn -> {
-					final Block blockIn = sp.world.getBlockState(posIn).getBlock();
-					final float[] color = blockIn instanceof BlockLightBlocker
-							? COLOR_BLOCKER
-							: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-					ClientProxy.render(posIn, color);
-				});
+				playerPlacedBlocks.clear();
 			}
-			GlStateManager.enableTexture();
-		} else if (!playerPlacedBlocks.isEmpty()) {
-			playerPlacedBlocks.clear();
 			dirty = true;
 		}
+		if (dirty)
+			refill(pos, sp.world);
+		if (playerPlacedBlocks.isEmpty())
+			return;
+
+		final Vec3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+		final MatrixStack matrixStack = event.getMatrixStack();
+		matrixStack.push();
+		matrixStack.translate(-view.x, -view.y, -view.z);
+
+		final IRenderTypeBuffer.Impl buffers = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+		final IVertexBuilder builder = buffers.getBuffer(RenderType.getLines());
+
+		synchronized (playerPlacedBlocks) {
+			playerPlacedBlocks.forEach(posIn -> {
+				final Block blockIn = sp.world.getBlockState(posIn).getBlock();
+				final float[] color = blockIn instanceof BlockLightBlocker
+						? COLOR_BLOCKER
+						: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
+				final AxisAlignedBB box = new AxisAlignedBB(
+						posIn.getX(), posIn.getY(), posIn.getZ(),
+						posIn.getX() + 1.0, posIn.getY() + 1.0, posIn.getZ() + 1.0);
+				WorldRenderer.drawBoundingBox(matrixStack, builder, box,
+						color[0], color[1], color[2], color[3]);
+			});
+		}
+
+		matrixStack.pop();
+		buffers.finish(RenderType.getLines());
 	}
 }

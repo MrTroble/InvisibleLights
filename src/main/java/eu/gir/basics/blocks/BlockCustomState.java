@@ -8,6 +8,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 public class BlockCustomState extends BlockCustomLight {
 
@@ -48,9 +49,7 @@ public class BlockCustomState extends BlockCustomLight {
 	}
 
 	@Override
-	public void tick(final BlockState state, final World worldIn, final BlockPos pos, final Random rand) {
-		if (worldIn.isRemote)
-			return;
+	public void tick(final BlockState state, final ServerWorld worldIn, final BlockPos pos, final Random rand) {
 		if (!worldIn.isBlockPowered(pos) && state.get(POWERED)) {
 			worldIn.setBlockState(pos, state.with(POWERED, false), 3);
 		}
