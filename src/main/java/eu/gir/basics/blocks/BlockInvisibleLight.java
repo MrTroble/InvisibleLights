@@ -17,7 +17,7 @@ public class BlockInvisibleLight extends Block {
 
 	public BlockInvisibleLight(final int light) {
 		super(Block.Properties.create(Material.EARTH)
-				.lightValue(light)
+				.setLightLevel(state -> light)
 				.hardnessAndResistance(0.5f)
 				.notSolid());
 	}
