@@ -4,8 +4,8 @@ import java.util.List;
 
 import eu.gir.basics.blocks.BlockCustomLight;
 import eu.gir.basics.blocks.BlockCustomState;
-import net.minecraft.block.Block;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 public final class BlockLists {
 

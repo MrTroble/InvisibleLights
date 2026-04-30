@@ -1,15 +1,15 @@
 package eu.gir.basics.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.Material;
 
 public class BlockGhostGlowstone extends Block {
 
 	public BlockGhostGlowstone() {
-		super(Block.Properties.create(Material.GLASS)
+		super(Block.Properties.of(Material.GLASS)
 				.sound(SoundType.GLASS)
-				.hardnessAndResistance(0.3f)
-				.notSolid());
+				.strength(0.3f)
+				.noOcclusion());
 	}
 }

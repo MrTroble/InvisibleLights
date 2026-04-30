@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
     }
 }
@@ -30,7 +30,7 @@ repositories {
 
 def ver = System.getenv("APPVEYOR_BUILD_VERSION")
 if(ver == null)
-	ver = 'dev'
+	ver = '0.0.0'
 
 def key = System.getenv("CURSETOKEN")
 if(key == null)
@@ -42,6 +42,7 @@ curseforge {
     changelog = file('changelog.md')
     releaseType = 'release'
     changelogType = 'markdown'
+    addGameVersion '1.17.1'
   }
 }
 
@@ -49,10 +50,10 @@ version = ver
 group = 'eu.gir'
 archivesBaseName = 'invisiblelights'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'snapshot', version: '20210309-1.16.5'
+    mappings channel: 'official', version: '1.17.1'
     runs {
         client {
             workingDirectory project.file('run')
@@ -79,7 +80,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.42'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.1.1'
 }
 
 jar {
@@ -99,12 +100,8 @@ jar {
 processResources {
     inputs.property "version", ver
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "META-INF/mods.toml"
+    filesMatching("META-INF/mods.toml") {
         expand "version": ver
-    }
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "META-INF/mods.toml"
     }
 }
 

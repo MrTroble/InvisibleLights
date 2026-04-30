@@ -8,13 +8,13 @@ import eu.gir.basics.GIRMain;
 import eu.gir.basics.blocks.BlockGhostGlowstone;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,9 +22,9 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class GIRInit {
 
-	public static final ItemGroup LIGHT_TAB = new ItemGroup("invisiblelights") {
+	public static final CreativeModeTab LIGHT_TAB = new CreativeModeTab("invisiblelights") {
 		@Override
-		public ItemStack createIcon() {
+		public ItemStack makeIcon() {
 			return new ItemStack(INVISIBLE_LIGHTS_2);
 		}
 	};
@@ -75,7 +75,7 @@ public class GIRInit {
 	public static void registerItems(final RegistryEvent.Register<Item> event) {
 		final IForgeRegistry<Item> registry = event.getRegistry();
 		blocksToRegister.forEach(block -> {
-			final BlockItem item = new BlockItem(block, new Item.Properties().group(LIGHT_TAB));
+			final BlockItem item = new BlockItem(block, new Item.Properties().tab(LIGHT_TAB));
 			item.setRegistryName(block.getRegistryName());
 			registry.register(item);
 		});
@@ -85,9 +85,9 @@ public class GIRInit {
 	public static void blockBreakEven(final BreakEvent event) {
 		if (!(event.getState().getBlock() instanceof BlockInvisibleLight))
 			return;
-		final PlayerEntity player = event.getPlayer();
-		final Item item = player.getHeldItemMainhand().getItem();
-		if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
+		final Player player = event.getPlayer();
+		final Item item = player.getMainHandItem().getItem();
+		if (!(Block.byItem(item) instanceof BlockInvisibleLight)) {
 			event.setCanceled(true);
 		}
 	}

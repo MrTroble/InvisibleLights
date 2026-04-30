@@ -13,8 +13,8 @@ import com.google.gson.JsonSyntaxException;
 
 import eu.gir.basics.init.GIRInit;
 import eu.gir.basics.proxy.ClientProxy;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;

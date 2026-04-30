@@ -2,32 +2,30 @@ package eu.gir.basics.proxy;
 
 import java.util.ArrayList;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import eu.gir.basics.blocks.BlockCustomLight;
 import eu.gir.basics.blocks.BlockInvisibleLight;
 import eu.gir.basics.blocks.BlockLightBlocker;
 import eu.gir.basics.init.GIRInit;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawHighlightEvent;
+import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent;
@@ -40,7 +38,7 @@ public final class ClientProxy {
 	private ClientProxy() {}
 
 	public static void onClientSetup(final FMLClientSetupEvent event) {
-		RenderTypeLookup.setRenderLayer(GIRInit.GHOST_GLOWSTONE, RenderType.getCutoutMipped());
+		ItemBlockRenderTypes.setRenderLayer(GIRInit.GHOST_GLOWSTONE, RenderType.cutoutMipped());
 	}
 
 	private static final int RADIUS = 50;
@@ -55,15 +53,15 @@ public final class ClientProxy {
 	private static boolean dirty = true;
 	private static BlockPos lastPosition = BlockPos.ZERO;
 
-	public static void refill(final BlockPos pos, final World world) {
+	public static void refill(final BlockPos pos, final Level level) {
 		lastPosition = pos;
 		dirty = false;
 		new Thread(() -> {
 			for (int x = -RADIUS; x <= RADIUS; x++) {
 				for (int y = -RADIUS; y <= RADIUS; y++) {
 					for (int z = -RADIUS; z <= RADIUS; z++) {
-						final BlockPos nPos = pos.add(x, y, z);
-						final Block pBlock = world.getBlockState(nPos).getBlock();
+						final BlockPos nPos = pos.offset(x, y, z);
+						final Block pBlock = level.getBlockState(nPos).getBlock();
 						if (pBlock instanceof BlockInvisibleLight) {
 							synchronized (playerPlacedBlocks) {
 								playerPlacedBlocks.add(nPos);
@@ -76,15 +74,15 @@ public final class ClientProxy {
 	}
 
 	@SubscribeEvent
-	public static void renderOverlayEvent(final DrawHighlightEvent.HighlightBlock event) {
-		final BlockRayTraceResult result = event.getTarget();
-		final PlayerEntity player = Minecraft.getInstance().player;
+	public static void renderOverlayEvent(final DrawSelectionEvent.HighlightBlock event) {
+		final BlockHitResult result = event.getTarget();
+		final Player player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
-		final World world = player.getEntityWorld();
-		if (world == null)
+		final Level level = player.level;
+		if (level == null)
 			return;
-		final BlockState state = world.getBlockState(result.getPos());
+		final BlockState state = level.getBlockState(result.getBlockPos());
 		if (state.getBlock() instanceof BlockInvisibleLight)
 			event.setCanceled(true);
 	}
@@ -94,15 +92,15 @@ public final class ClientProxy {
 		final Entity placerEntity = event.getEntity();
 		if (placerEntity == null)
 			return;
-		final ClientPlayerEntity player = Minecraft.getInstance().player;
+		final LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null)
 			return;
-		final BlockPos playerPos = player.getPosition();
-		final double distance = placerEntity.getPosition().distanceSq(playerPos);
+		final BlockPos playerPos = player.blockPosition();
+		final double distance = placerEntity.blockPosition().distSqr(playerPos);
 		if (distance < RADIUSPLAYER) {
 			if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
 				playerPlacedBlocks.clear();
-				refill(playerPos, player.getEntityWorld());
+				refill(playerPos, player.level);
 			}
 		}
 	}
@@ -116,10 +114,10 @@ public final class ClientProxy {
 
 	@SubscribeEvent
 	public static void renderWorldLastEvent(final RenderWorldLastEvent event) {
-		final ClientPlayerEntity sp = Minecraft.getInstance().player;
+		final LocalPlayer sp = Minecraft.getInstance().player;
 		if (sp == null)
 			return;
-		final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
+		final Block block = Block.byItem(sp.getMainHandItem().getItem());
 		if (!(block instanceof BlockInvisibleLight)) {
 			if (!playerPlacedBlocks.isEmpty()) {
 				playerPlacedBlocks.clear();
@@ -128,41 +126,41 @@ public final class ClientProxy {
 			return;
 		}
 
-		final BlockPos pos = sp.getPosition();
-		if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
+		final BlockPos pos = sp.blockPosition();
+		if (pos.distSqr(lastPosition) > UPDATE_SPHERE) {
 			synchronized (playerPlacedBlocks) {
 				playerPlacedBlocks.clear();
 			}
 			dirty = true;
 		}
 		if (dirty)
-			refill(pos, sp.world);
+			refill(pos, sp.level);
 		if (playerPlacedBlocks.isEmpty())
 			return;
 
-		final Vector3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-		final MatrixStack matrixStack = event.getMatrixStack();
-		matrixStack.push();
-		matrixStack.translate(-view.x, -view.y, -view.z);
+		final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+		final PoseStack poseStack = event.getMatrixStack();
+		poseStack.pushPose();
+		poseStack.translate(-view.x, -view.y, -view.z);
 
-		final IRenderTypeBuffer.Impl buffers = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-		final IVertexBuilder builder = buffers.getBuffer(RenderType.getLines());
+		final MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
+		final VertexConsumer builder = buffers.getBuffer(RenderType.lines());
 
 		synchronized (playerPlacedBlocks) {
 			playerPlacedBlocks.forEach(posIn -> {
-				final Block blockIn = sp.world.getBlockState(posIn).getBlock();
+				final Block blockIn = sp.level.getBlockState(posIn).getBlock();
 				final float[] color = blockIn instanceof BlockLightBlocker
 						? COLOR_BLOCKER
 						: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-				final AxisAlignedBB box = new AxisAlignedBB(
+				final AABB box = new AABB(
 						posIn.getX(), posIn.getY(), posIn.getZ(),
 						posIn.getX() + 1.0, posIn.getY() + 1.0, posIn.getZ() + 1.0);
-				WorldRenderer.drawBoundingBox(matrixStack, builder, box,
+				net.minecraft.client.renderer.LevelRenderer.renderLineBox(poseStack, builder, box,
 						color[0], color[1], color[2], color[3]);
 			});
 		}
 
-		matrixStack.pop();
-		buffers.finish(RenderType.getLines());
+		poseStack.popPose();
+		buffers.endBatch(RenderType.lines());
 	}
 }
