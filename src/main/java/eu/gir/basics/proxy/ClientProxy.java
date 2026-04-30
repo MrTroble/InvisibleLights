@@ -25,10 +25,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent;
+import net.minecraftforge.event.level.BlockEvent.BreakEvent;
+import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -74,7 +74,7 @@ public final class ClientProxy {
 	}
 
 	@SubscribeEvent
-	public static void renderOverlayEvent(final DrawSelectionEvent.HighlightBlock event) {
+	public static void renderOverlayEvent(final RenderHighlightEvent.Block event) {
 		final BlockHitResult result = event.getTarget();
 		final Player player = Minecraft.getInstance().player;
 		if (player == null)
