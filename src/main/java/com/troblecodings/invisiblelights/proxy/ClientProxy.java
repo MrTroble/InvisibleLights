@@ -37,155 +37,168 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ClientProxy extends CommonProxy {
-	
-	@Override
-	public void preinit(final FMLPreInitializationEvent event) {
-		super.preinit(event);
-		MinecraftForge.EVENT_BUS.register(ClientProxy.class);
-		ModelLoaderRegistry.registerLoader(new ILModel());
-	}
-	
-	@SubscribeEvent
-	public static void modelEvents(final ModelRegistryEvent event) {
-		ILInit.itemsToRegister.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory")));
-		ILInit.blocksToRegister.forEach(block -> {
-			final Item item = Item.getItemFromBlock(block);
-			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
-		});
-		
-	}
-	
-	private static final int RADIUS = 50;
-	private static final int UPDATE_SPHERE = 50;
-	private static final int RADIUSPLAYER = RADIUS * RADIUS + 10;
-	private static double d1;
-	private static double d2;
-	private static double d3;
-	
-	private static final float[] COLOR_NORMAL = new float[] { 0, 1, 0, 1 };
-	private static final float[] COLOR_BLOCKER = new float[] { 1, 0, 0, 1 };
-	private static final float[] COLOR_CUSTOM = new float[] { 1, 0.5f, 0, 1 };
-	
-	public static void render(final BlockPos pos1, final float[] color) {
-		RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset((pos1.getX()) - d1, (pos1.getY()) - d2, (pos1.getZ()) - d3), color[0], color[1], color[2], color[3]);
-	}
-	
-	private static ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
-	private static boolean dirty = true;
-	private static BlockPos lastPosition = BlockPos.ORIGIN;
-	
-	public static void refill(final BlockPos pos, final World world) {
-		lastPosition = pos;
-		dirty = false;
-		new Thread(() -> {
-			for (int x = -RADIUS; x <= RADIUS; x++) {
-				for (int y = -RADIUS; y <= RADIUS; y++) {
-					for (int z = -RADIUS; z <= RADIUS; z++) {
-						final BlockPos nPos = pos.add(x, y, z);
-						final Block pBlock = world.getBlockState(nPos).getBlock();
-						if (pBlock instanceof BlockInvisibleLight) {
-							synchronized (playerPlacedBlocks) {
-								playerPlacedBlocks.add(nPos);
-							}
-						}
-					}
-				}
-			}
-		}).start();
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
-		final EntityPlayer player = render.getPlayer();
-		if (player == null)
-			return;
-		final World world = player.getEntityWorld();
-		if (world == null)
-			return;
-		final RayTraceResult result = render.getTarget();
-		if (result == null)
-			return;
-		final BlockPos pos = result.getBlockPos();
-		if (pos == null)
-			return;
-		final IBlockState state = world.getBlockState(pos);
-		if (state.getBlock() instanceof BlockInvisibleLight)
-			render.setCanceled(true);
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public static void blockPlaceEvent(final EntityPlaceEvent event) {
-		final Entity placerEntity = event.getEntity();
-		if (placerEntity == null)
-			return;
-		final EntityPlayerSP player = Minecraft.getMinecraft().player;
-		if (player == null)
-			return;
-		final BlockPos playerPos = player.getPosition();
-		final double distance = placerEntity.getPosition().distanceSq(playerPos);
-		if (distance < RADIUSPLAYER) {
-			if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
-				playerPlacedBlocks.clear();
-				refill(playerPos, player.getEntityWorld());
-			}
-		}
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public static void blockPlaceEvent(final BreakEvent event) {
-		synchronized (playerPlacedBlocks) {
-			if (playerPlacedBlocks.contains(event.getPos()))
-				playerPlacedBlocks.remove(event.getPos());
-		}
-	}
-	
-	@SubscribeEvent
-	public static void modelEvents(final RenderWorldLastEvent event) {
-		final EntityPlayerSP sp = Minecraft.getMinecraft().player;
-		final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
-		if (block instanceof BlockInvisibleLight) {
-			final BlockPos pos = sp.getPosition();
-			if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
-				synchronized (playerPlacedBlocks) {
-					playerPlacedBlocks.clear();
-				}
-				dirty = true;
-			}
-			if (dirty)
-				refill(pos, sp.world);
-			if (playerPlacedBlocks.isEmpty())
-				return;
-			final double part = event.getPartialTicks();
-			d1 = sp.lastTickPosX + (sp.posX - sp.lastTickPosX) * part;
-			d2 = sp.lastTickPosY + (sp.posY - sp.lastTickPosY) * part;
-			d3 = sp.lastTickPosZ + (sp.posZ - sp.lastTickPosZ) * part;
-			
-			GlStateManager.disableTexture2D();
-			synchronized (playerPlacedBlocks) {
-				playerPlacedBlocks.forEach(posIn -> {
-					final Block blockIn = sp.world.getBlockState(posIn).getBlock();
-					final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-					ClientProxy.render(posIn, color);
-				});
-			}
-			GlStateManager.enableTexture2D();
-		} else if (!playerPlacedBlocks.isEmpty()) {
-			playerPlacedBlocks.clear();
-			dirty = true;
-		}
-	}
-	
-	@Override
-	public void init(final FMLInitializationEvent event) {
-		super.init(event);
-	}
-	
-	@Override
-	public void postinit(final FMLPostInitializationEvent event) {
-		super.postinit(event);
-	}
-	
+
+    @Override
+    public void preinit(final FMLPreInitializationEvent event) {
+        super.preinit(event);
+        MinecraftForge.EVENT_BUS.register(ClientProxy.class);
+        ModelLoaderRegistry.registerLoader(new ILModel());
+    }
+
+    @SubscribeEvent
+    public static void modelEvents(final ModelRegistryEvent event) {
+        ILInit.itemsToRegister.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0,
+                new ModelResourceLocation(item.getRegistryName(), "inventory")));
+        ILInit.blocksToRegister.forEach(block -> {
+            final Item item = Item.getItemFromBlock(block);
+            ModelLoader.setCustomModelResourceLocation(item, 0,
+                    new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        });
+
+    }
+
+    private static final int RADIUS = 50;
+    private static final int UPDATE_SPHERE = 50;
+    private static final int RADIUSPLAYER = RADIUS * RADIUS + 10;
+    private static double d1;
+    private static double d2;
+    private static double d3;
+
+    private static final float[] COLOR_NORMAL = new float[] {
+            0, 1, 0, 1
+    };
+    private static final float[] COLOR_BLOCKER = new float[] {
+            1, 0, 0, 1
+    };
+    private static final float[] COLOR_CUSTOM = new float[] {
+            1, 0.5f, 0, 1
+    };
+
+    public static void render(final BlockPos pos1, final float[] color) {
+        RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset((pos1.getX()) - d1,
+                (pos1.getY()) - d2, (pos1.getZ()) - d3), color[0], color[1], color[2], color[3]);
+    }
+
+    private static ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
+    private static boolean dirty = true;
+    private static BlockPos lastPosition = BlockPos.ORIGIN;
+
+    public static void refill(final BlockPos pos, final World world) {
+        lastPosition = pos;
+        dirty = false;
+        new Thread(() -> {
+            for (int x = -RADIUS; x <= RADIUS; x++) {
+                for (int y = -RADIUS; y <= RADIUS; y++) {
+                    for (int z = -RADIUS; z <= RADIUS; z++) {
+                        final BlockPos nPos = pos.add(x, y, z);
+                        final Block pBlock = world.getBlockState(nPos).getBlock();
+                        if (pBlock instanceof BlockInvisibleLight) {
+                            synchronized (playerPlacedBlocks) {
+                                playerPlacedBlocks.add(nPos);
+                            }
+                        }
+                    }
+                }
+            }
+        }).start();
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
+        final EntityPlayer player = render.getPlayer();
+        if (player == null)
+            return;
+        final World world = player.getEntityWorld();
+        if (world == null)
+            return;
+        final RayTraceResult result = render.getTarget();
+        if (result == null)
+            return;
+        final BlockPos pos = result.getBlockPos();
+        if (pos == null)
+            return;
+        final IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() instanceof BlockInvisibleLight) {
+            render.setCanceled(true);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void blockPlaceEvent(final EntityPlaceEvent event) {
+        final Entity placerEntity = event.getEntity();
+        if (placerEntity == null)
+            return;
+        final EntityPlayerSP player = Minecraft.getMinecraft().player;
+        if (player == null)
+            return;
+        final BlockPos playerPos = player.getPosition();
+        final double distance = placerEntity.getPosition().distanceSq(playerPos);
+        if (distance < RADIUSPLAYER) {
+            if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
+                playerPlacedBlocks.clear();
+                refill(playerPos, player.getEntityWorld());
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void blockPlaceEvent(final BreakEvent event) {
+        synchronized (playerPlacedBlocks) {
+            if (playerPlacedBlocks.contains(event.getPos())) {
+                playerPlacedBlocks.remove(event.getPos());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void modelEvents(final RenderWorldLastEvent event) {
+        final EntityPlayerSP sp = Minecraft.getMinecraft().player;
+        final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
+        if (block instanceof BlockInvisibleLight) {
+            final BlockPos pos = sp.getPosition();
+            if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
+                synchronized (playerPlacedBlocks) {
+                    playerPlacedBlocks.clear();
+                }
+                dirty = true;
+            }
+            if (dirty) {
+                refill(pos, sp.world);
+            }
+            if (playerPlacedBlocks.isEmpty())
+                return;
+            final double part = event.getPartialTicks();
+            d1 = sp.lastTickPosX + (sp.posX - sp.lastTickPosX) * part;
+            d2 = sp.lastTickPosY + (sp.posY - sp.lastTickPosY) * part;
+            d3 = sp.lastTickPosZ + (sp.posZ - sp.lastTickPosZ) * part;
+
+            GlStateManager.disableTexture2D();
+            synchronized (playerPlacedBlocks) {
+                playerPlacedBlocks.forEach(posIn -> {
+                    final Block blockIn = sp.world.getBlockState(posIn).getBlock();
+                    final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
+                            : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
+                    ClientProxy.render(posIn, color);
+                });
+            }
+            GlStateManager.enableTexture2D();
+        } else if (!playerPlacedBlocks.isEmpty()) {
+            playerPlacedBlocks.clear();
+            dirty = true;
+        }
+    }
+
+    @Override
+    public void init(final FMLInitializationEvent event) {
+        super.init(event);
+    }
+
+    @Override
+    public void postinit(final FMLPostInitializationEvent event) {
+        super.postinit(event);
+    }
+
 }

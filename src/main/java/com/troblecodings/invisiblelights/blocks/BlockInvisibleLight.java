@@ -15,52 +15,53 @@ import net.minecraft.world.IBlockAccess;
 
 public class BlockInvisibleLight extends Block {
 
-	public BlockInvisibleLight(int light) {
-		super(Material.GROUND);
-		this.setLightLevel(light / 15.0f);
-		this.setCreativeTab(ILInit.LIGHT_TAB);
-		this.disableStats();
-	}
+    public BlockInvisibleLight(final int light) {
+        super(Material.GROUND);
+        this.setLightLevel(light / 15.0f);
+        this.setCreativeTab(ILInit.LIGHT_TAB);
+        this.disableStats();
+    }
 
-	@Override
-	public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
-		return true;
-	}
-	
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-		
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.INVISIBLE;
-	}
-	
-	@Override
-	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-	
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
-	
-	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		return FULL_BLOCK_AABB;
-	}
-	
-	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-		return NULL_AABB;
-	}
-		
     @Override
-	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
+    public boolean isPassable(final IBlockAccess worldIn, final BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean isOpaqueCube(final IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public EnumBlockRenderType getRenderType(final IBlockState state) {
+        return EnumBlockRenderType.INVISIBLE;
+    }
+
+    @Override
+    public BlockRenderLayer getBlockLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    @Override
+    public boolean isFullCube(final IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess source, final BlockPos pos) {
+        return FULL_BLOCK_AABB;
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, final IBlockAccess worldIn,
+            final BlockPos pos) {
+        return NULL_AABB;
+    }
+
+    @Override
+    public BlockFaceShape getBlockFaceShape(final IBlockAccess worldIn, final IBlockState state, final BlockPos pos,
+            final EnumFacing face) {
         return BlockFaceShape.UNDEFINED;
     }
-    
+
 }

@@ -12,11 +12,11 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 public class ILModel implements ICustomModelLoader {
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(final IResourceManager resourceManager) {
     }
 
     @Override
-    public boolean accepts(ResourceLocation modelLocation) {
+    public boolean accepts(final ResourceLocation modelLocation) {
         return modelLocation.getResourceDomain().equals(InvisibleLightsMain.MODID)
                 && !modelLocation.getResourcePath().endsWith("invisiblelights")
                 && !modelLocation.getResourcePath().endsWith("ghostglowstone");
@@ -25,10 +25,11 @@ public class ILModel implements ICustomModelLoader {
     private static IModel modelCache = null;
 
     @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+    public IModel loadModel(final ResourceLocation modelLocation) throws Exception {
         if (modelCache == null) {
             modelCache = new ItemLayerModel(ModelLoaderRegistry
-                    .getModel(new ResourceLocation(InvisibleLightsMain.MODID, "item/invisiblelights"))
+                    .getModel(
+                            new ResourceLocation(InvisibleLightsMain.MODID, "item/invisiblelights"))
                     .asVanillaModel().get());
         }
         return modelCache;

@@ -29,14 +29,14 @@ public class BlockGhostGlowstone extends Block {
     }
 
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos,
-            EnumFacing face) {
+    public BlockFaceShape getBlockFaceShape(final IBlockAccess worldIn, final IBlockState state, final BlockPos pos,
+            final EnumFacing face) {
         return BlockFaceShape.CENTER;
     }
-    
+
     @Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos,
-            EnumFacing face) {
+    public boolean doesSideBlockRendering(final IBlockState state, final IBlockAccess world, final BlockPos pos,
+            final EnumFacing face) {
         return false;
     }
 

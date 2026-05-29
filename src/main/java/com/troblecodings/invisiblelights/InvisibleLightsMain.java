@@ -40,8 +40,8 @@ public class InvisibleLightsMain {
     public void preinit(final FMLPreInitializationEvent event) {
         LOG = event.getModLog();
         PROXY.preinit(event);
-        final Path path = event.getModConfigurationDirectory().toPath()
-                .resolve("gircLightBlocks.json");
+        final Path path =
+                event.getModConfigurationDirectory().toPath().resolve("invisiblelights.json");
         if (Files.notExists(path)) {
             LOG.debug("Did not find {} skipping!", path.toString());
             return;
