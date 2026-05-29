@@ -1,6 +1,7 @@
-package eu.gir.basics.blocks;
+package com.troblecodings.invisiblelights.blocks;
 
-import eu.gir.basics.init.GIRInit;
+import com.troblecodings.invisiblelights.init.ILInit;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -18,7 +19,7 @@ public class BlockGhostGlowstone extends Block {
 
     public BlockGhostGlowstone() {
         super(Material.GLASS);
-        setCreativeTab(GIRInit.LIGHT_TAB);
+        setCreativeTab(ILInit.LIGHT_TAB);
         setSoundType(SoundType.GLASS);
     }
 
@@ -28,19 +29,19 @@ public class BlockGhostGlowstone extends Block {
     }
 
     @Override
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos,
-            EnumFacing face) {
+    public BlockFaceShape getBlockFaceShape(final IBlockAccess worldIn, final IBlockState state, final BlockPos pos,
+            final EnumFacing face) {
         return BlockFaceShape.CENTER;
     }
-    
+
     @Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos,
-            EnumFacing face) {
+    public boolean doesSideBlockRendering(final IBlockState state, final IBlockAccess world, final BlockPos pos,
+            final EnumFacing face) {
         return false;
     }
 
     public static void init() {
-        GameRegistry.addSmelting(Blocks.GLOWSTONE, new ItemStack(GIRInit.GHOST_GLOWSTONE), 0.35f);
+        GameRegistry.addSmelting(Blocks.GLOWSTONE, new ItemStack(ILInit.GHOST_GLOWSTONE), 0.35f);
     }
 
 }
