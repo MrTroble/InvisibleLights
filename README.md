@@ -8,7 +8,7 @@
 
 ## This mod adds invisible light blocks to help you better illuminate your world.
 
-- Download on [Curseforge](https://www.curseforge.com/minecraft/mc-mods/invisible-lights) or [Modrinth](https://www.curseforge.com/minecraft/mc-mods/invisible-lights).  
+- Download on [Curseforge](https://www.curseforge.com/minecraft/mc-mods/invisible-lights) or [Modrinth](https://modrinth.com/mod/invisiblelights).  
 - Updates can be found in the [changelog](changelog.md).
 
 ## How to build this mod
