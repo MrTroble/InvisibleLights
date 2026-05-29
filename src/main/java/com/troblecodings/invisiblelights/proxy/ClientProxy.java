@@ -47,9 +47,9 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public static void modelEvents(final ModelRegistryEvent event) {
-        ILInit.itemsToRegister.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0,
+        ILInit.ITEMS_TO_REGISTER.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0,
                 new ModelResourceLocation(item.getRegistryName(), "inventory")));
-        ILInit.blocksToRegister.forEach(block -> {
+        ILInit.BLOCKS_TO_REGISTER.forEach(block -> {
             final Item item = Item.getItemFromBlock(block);
             ModelLoader.setCustomModelResourceLocation(item, 0,
                     new ModelResourceLocation(item.getRegistryName(), "inventory"));

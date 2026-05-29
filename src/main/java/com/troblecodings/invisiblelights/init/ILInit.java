@@ -33,6 +33,9 @@ public class ILInit {
         }
     };
 
+    private ILInit() {
+    }
+
     public static final Block INVISIBLE_LIGHTS_2 = new BlockInvisibleLight(2);
     public static final Block INVISIBLE_LIGHTS_3 = new BlockInvisibleLight(3);
     public static final Block INVISIBLE_LIGHTS_4 = new BlockInvisibleLight(4);
@@ -50,8 +53,8 @@ public class ILInit {
     public static final Block BLOCKER = new BlockLightBlocker();
     public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
 
-    public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
-    public static final ArrayList<Item> itemsToRegister = new ArrayList<>();
+    public static final ArrayList<Block> BLOCKS_TO_REGISTER = new ArrayList<>();
+    public static final ArrayList<Item> ITEMS_TO_REGISTER = new ArrayList<>();
 
     public static void init() {
         final Field[] fields = ILInit.class.getFields();
@@ -67,7 +70,7 @@ public class ILInit {
                         block.setRegistryName(
                                 new ResourceLocation(InvisibleLightsMain.MODID, name));
                         block.setUnlocalizedName(name);
-                        blocksToRegister.add(block);
+                        BLOCKS_TO_REGISTER.add(block);
                         if (block instanceof ITileEntityProvider) {
                             final ITileEntityProvider provider = (ITileEntityProvider) block;
                             try {
@@ -76,9 +79,9 @@ public class ILInit {
                                 TileEntity.register(tileclass.getSimpleName().toLowerCase(),
                                         tileclass);
                             } catch (final NullPointerException ex) {
-                                InvisibleLightsMain.LOG.trace(
-                                        "All tileentity provide need to call back a default entity if the world is null!",
-                                        ex);
+                                InvisibleLightsMain.log
+                                        .trace("All tileentity provide need to call back"
+                                                + "a default entity if the world is null!", ex);
                             }
                         }
                     }
@@ -86,9 +89,9 @@ public class ILInit {
                         final Item item = (Item) obj;
                         item.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
                         item.setUnlocalizedName(name);
-                        itemsToRegister.add(item);
+                        ITEMS_TO_REGISTER.add(item);
                     }
-                } catch (IllegalArgumentException | IllegalAccessException e) {
+                } catch (final IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
@@ -98,15 +101,15 @@ public class ILInit {
     @SubscribeEvent
     public static void registerBlock(final RegistryEvent.Register<Block> event) {
         final IForgeRegistry<Block> registry = event.getRegistry();
-        blocksToRegister.forEach(registry::register);
+        BLOCKS_TO_REGISTER.forEach(registry::register);
     }
 
     @SubscribeEvent
     public static void registerItem(final RegistryEvent.Register<Item> event) {
         final IForgeRegistry<Item> registry = event.getRegistry();
-        blocksToRegister.forEach(block -> registry
+        BLOCKS_TO_REGISTER.forEach(block -> registry
                 .register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
-        itemsToRegister.forEach(registry::register);
+        ITEMS_TO_REGISTER.forEach(registry::register);
     }
 
     @SubscribeEvent

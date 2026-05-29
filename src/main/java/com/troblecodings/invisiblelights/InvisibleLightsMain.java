@@ -33,36 +33,36 @@ public class InvisibleLightsMain {
 
     @SidedProxy(serverSide = "com.troblecodings.invisiblelights.proxy.CommonProxy",
             clientSide = "com.troblecodings.invisiblelights.proxy.ClientProxy")
-    public static CommonProxy PROXY;
-    public static Logger LOG;
+    public static CommonProxy proxy;
+    public static Logger log;
 
     @EventHandler
     public void preinit(final FMLPreInitializationEvent event) {
-        LOG = event.getModLog();
-        PROXY.preinit(event);
+        log = event.getModLog();
+        proxy.preinit(event);
         final Path path =
                 event.getModConfigurationDirectory().toPath().resolve("invisiblelights.json");
         if (Files.notExists(path)) {
-            LOG.debug("Did not find {} skipping!", path.toString());
+            log.debug("Did not find {} skipping!", path.toString());
             return;
         }
         final Gson gson = new Gson();
         try (final Reader reader = Files.newBufferedReader(path)) {
-            gson.fromJson(reader, BlockLists.class).addToList(ILInit.blocksToRegister);
+            gson.fromJson(reader, BlockLists.class).addToList(ILInit.BLOCKS_TO_REGISTER);
         } catch (final IOException e) {
             e.printStackTrace();
         } catch (final JsonSyntaxException e) {
-            LOG.error("Could not parse json! Error {}", e.getMessage());
+            log.error("Could not parse json! Error {}", e.getMessage());
         }
     }
 
     @EventHandler
     public void init(final FMLInitializationEvent event) {
-        PROXY.init(event);
+        proxy.init(event);
     }
 
     @EventHandler
     public void postinit(final FMLPostInitializationEvent event) {
-        PROXY.postinit(event);
+        proxy.postinit(event);
     }
 }
