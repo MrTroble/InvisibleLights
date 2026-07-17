@@ -25,10 +25,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.DrawSelectionEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent;
+import net.minecraftforge.event.level.BlockEvent.BreakEvent;
+import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -57,7 +57,7 @@ public final class ClientProxy {
             1, 0.5f, 0, 1
     };
 
-    private static final ArrayList<BlockPos> PLAYER_PLACED_BLOCKS = new ArrayList<>();
+    private static final ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
     private static boolean dirty = true;
     private static BlockPos lastPosition = BlockPos.ZERO;
 
@@ -71,8 +71,8 @@ public final class ClientProxy {
                         final BlockPos nPos = pos.offset(x, y, z);
                         final Block pBlock = level.getBlockState(nPos).getBlock();
                         if (pBlock instanceof BlockInvisibleLight) {
-                            synchronized (PLAYER_PLACED_BLOCKS) {
-                                PLAYER_PLACED_BLOCKS.add(nPos);
+                            synchronized (playerPlacedBlocks) {
+                                playerPlacedBlocks.add(nPos);
                             }
                         }
                     }
@@ -82,7 +82,7 @@ public final class ClientProxy {
     }
 
     @SubscribeEvent
-    public static void renderOverlayEvent(final DrawSelectionEvent.HighlightBlock event) {
+    public static void renderOverlayEvent(final RenderHighlightEvent.Block event) {
         final BlockHitResult result = event.getTarget();
         final Player player = Minecraft.getInstance().player;
         if (player == null)
@@ -108,7 +108,7 @@ public final class ClientProxy {
         final double distance = placerEntity.blockPosition().distSqr(playerPos);
         if (distance < RADIUSPLAYER) {
             if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
-                PLAYER_PLACED_BLOCKS.clear();
+                playerPlacedBlocks.clear();
                 refill(playerPos, player.level);
             }
         }
@@ -116,8 +116,8 @@ public final class ClientProxy {
 
     @SubscribeEvent
     public static void blockBreakEvent(final BreakEvent event) {
-        synchronized (PLAYER_PLACED_BLOCKS) {
-            PLAYER_PLACED_BLOCKS.remove(event.getPos());
+        synchronized (playerPlacedBlocks) {
+            playerPlacedBlocks.remove(event.getPos());
         }
     }
 
@@ -128,8 +128,8 @@ public final class ClientProxy {
             return;
         final Block block = Block.byItem(sp.getMainHandItem().getItem());
         if (!(block instanceof BlockInvisibleLight)) {
-            if (!PLAYER_PLACED_BLOCKS.isEmpty()) {
-                PLAYER_PLACED_BLOCKS.clear();
+            if (!playerPlacedBlocks.isEmpty()) {
+                playerPlacedBlocks.clear();
                 dirty = true;
             }
             return;
@@ -137,15 +137,15 @@ public final class ClientProxy {
 
         final BlockPos pos = sp.blockPosition();
         if (pos.distSqr(lastPosition) > UPDATE_SPHERE) {
-            synchronized (PLAYER_PLACED_BLOCKS) {
-                PLAYER_PLACED_BLOCKS.clear();
+            synchronized (playerPlacedBlocks) {
+                playerPlacedBlocks.clear();
             }
             dirty = true;
         }
         if (dirty) {
             refill(pos, sp.level);
         }
-        if (PLAYER_PLACED_BLOCKS.isEmpty())
+        if (playerPlacedBlocks.isEmpty())
             return;
 
         final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -157,8 +157,8 @@ public final class ClientProxy {
                 Minecraft.getInstance().renderBuffers().bufferSource();
         final VertexConsumer builder = buffers.getBuffer(RenderType.lines());
 
-        synchronized (PLAYER_PLACED_BLOCKS) {
-            PLAYER_PLACED_BLOCKS.forEach(posIn -> {
+        synchronized (playerPlacedBlocks) {
+            playerPlacedBlocks.forEach(posIn -> {
                 final Block blockIn = sp.level.getBlockState(posIn).getBlock();
                 final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
                         : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);

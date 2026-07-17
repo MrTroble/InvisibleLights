@@ -1,9 +1,8 @@
 package com.troblecodings.invisiblelights.blocks;
 
-import java.util.Random;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,7 +50,7 @@ public class BlockCustomState extends BlockCustomLight {
 
     @Override
     public void tick(final BlockState state, final ServerLevel level, final BlockPos pos,
-            final Random rand) {
+            final RandomSource rand) {
         if (!level.hasNeighborSignal(pos) && state.getValue(POWERED)) {
             level.setBlock(pos, state.setValue(POWERED, false), 3);
         }
