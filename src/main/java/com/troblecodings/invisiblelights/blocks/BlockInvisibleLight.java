@@ -12,34 +12,40 @@ import net.minecraft.world.IBlockReader;
 
 public class BlockInvisibleLight extends Block {
 
-	public BlockInvisibleLight(final int light) {
-		super(Block.Properties.create(Material.GROUND)
-				.lightValue(light)
-				.hardnessAndResistance(0.5f));
-	}
+    public BlockInvisibleLight(final int light) {
+        super(Block.Properties.create(Material.GROUND).lightValue(light)
+                .hardnessAndResistance(0.5f));
+    }
 
-	@Override
-	public boolean isSolid(final IBlockState state) {
-		return false;
-	}
+    @Override
+    public boolean isSolid(final IBlockState state) {
+        return false;
+    }
 
-	@Override
-	public EnumBlockRenderType getRenderType(final IBlockState state) {
-		return EnumBlockRenderType.INVISIBLE;
-	}
+    @Override
+    public EnumBlockRenderType getRenderType(final IBlockState state) {
+        return EnumBlockRenderType.INVISIBLE;
+    }
 
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
 
-	@Override
-	public VoxelShape getCollisionShape(final IBlockState state, final IBlockReader worldIn, final BlockPos pos) {
-		return VoxelShapes.empty();
-	}
+    @Override
+    public boolean isFullCube(final IBlockState state) {
+        return false;
+    }
 
-	@Override
-	public VoxelShape getShape(final IBlockState state, final IBlockReader worldIn, final BlockPos pos) {
-		return VoxelShapes.fullCube();
-	}
+    @Override
+    public VoxelShape getCollisionShape(final IBlockState state, final IBlockReader worldIn,
+            final BlockPos pos) {
+        return VoxelShapes.empty();
+    }
+
+    @Override
+    public VoxelShape getShape(final IBlockState state, final IBlockReader worldIn,
+            final BlockPos pos) {
+        return VoxelShapes.fullCube();
+    }
 }

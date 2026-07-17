@@ -7,14 +7,13 @@ import net.minecraft.util.BlockRenderLayer;
 
 public class BlockGhostGlowstone extends Block {
 
-	public BlockGhostGlowstone() {
-		super(Block.Properties.create(Material.GLASS)
-				.sound(SoundType.GLASS)
-				.hardnessAndResistance(0.3f));
-	}
+    public BlockGhostGlowstone() {
+        super(Block.Properties.create(Material.GLASS).sound(SoundType.GLASS)
+                .hardnessAndResistance(0.3f));
+    }
 
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT_MIPPED;
-	}
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT_MIPPED;
+    }
 }

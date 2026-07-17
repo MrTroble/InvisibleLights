@@ -6,12 +6,12 @@ import net.minecraft.world.IBlockReader;
 
 public class BlockLightBlocker extends BlockInvisibleLight {
 
-	public BlockLightBlocker() {
-		super(0);
-	}
+    public BlockLightBlocker() {
+        super(0);
+    }
 
-	@Override
-	public int getOpacity(final IBlockState state, final IBlockReader worldIn, final BlockPos pos) {
-		return 15;
-	}
+    @Override
+    public int getOpacity(final IBlockState state, final IBlockReader worldIn, final BlockPos pos) {
+        return 15;
+    }
 }
