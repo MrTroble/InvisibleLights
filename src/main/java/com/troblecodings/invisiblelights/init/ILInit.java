@@ -21,7 +21,7 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class ILInit {
+public final class ILInit {
 
     public static final ItemGroup LIGHT_TAB = new ItemGroup("invisiblelights") {
         @Override
