@@ -28,6 +28,12 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(project.java_version.toInteger())
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'net.sf.jopt-simple:jopt-simple:5.0.4'
+    }
+}
+
 minecraft {
     mappings channel: 'official', version: project.minecraft_version
     runs {
