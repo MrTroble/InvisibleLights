@@ -1,7 +1,5 @@
 package com.troblecodings.invisiblelights.blocks;
 
-import com.troblecodings.invisiblelights.init.ILInit;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
