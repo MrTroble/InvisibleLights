@@ -47,7 +47,10 @@ public class ILInit {
     public static final Block BLOCKER = new BlockLightBlocker();
     public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
 
-    public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
+    public static final ArrayList<Block> BLOCKS_TO_REGISTER = new ArrayList<>();
+
+    private ILInit() {
+    }
 
     public static void init() {
         for (final Field field : ILInit.class.getFields()) {
@@ -64,8 +67,8 @@ public class ILInit {
                 final Block block = (Block) obj;
                 final String name = field.getName().toLowerCase().replace("_", "");
                 block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
-                blocksToRegister.add(block);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
+                BLOCKS_TO_REGISTER.add(block);
+            } catch (final IllegalArgumentException | IllegalAccessException e) {
                 InvisibleLightsMain.LOG.error("Could not access field {}", field.getName(), e);
             }
         }
@@ -73,12 +76,12 @@ public class ILInit {
 
     public static void registerBlocks(final RegistryEvent.Register<Block> event) {
         final IForgeRegistry<Block> registry = event.getRegistry();
-        blocksToRegister.forEach(registry::register);
+        BLOCKS_TO_REGISTER.forEach(registry::register);
     }
 
     public static void registerItems(final RegistryEvent.Register<Item> event) {
         final IForgeRegistry<Item> registry = event.getRegistry();
-        blocksToRegister.forEach(block -> {
+        BLOCKS_TO_REGISTER.forEach(block -> {
             final ItemBlock item = new ItemBlock(block, new Item.Properties().group(LIGHT_TAB));
             item.setRegistryName(block.getRegistryName());
             registry.register(item);

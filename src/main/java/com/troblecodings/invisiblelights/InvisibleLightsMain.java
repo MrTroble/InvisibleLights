@@ -49,7 +49,7 @@ public class InvisibleLightsMain {
         }
         final Gson gson = new Gson();
         try (final Reader reader = Files.newBufferedReader(path)) {
-            gson.fromJson(reader, BlockLists.class).addToList(ILInit.blocksToRegister);
+            gson.fromJson(reader, BlockLists.class).addToList(ILInit.BLOCKS_TO_REGISTER);
         } catch (final IOException e) {
             LOG.error("Could not read {}", path, e);
         } catch (final JsonSyntaxException e) {

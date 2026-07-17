@@ -57,7 +57,7 @@ public final class ClientProxy {
                 color[1], color[2], color[3]);
     }
 
-    private static final ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
+    private static final ArrayList<BlockPos> PLAYER_PLACED_BLOCKS = new ArrayList<>();
     private static boolean dirty = true;
     private static BlockPos lastPosition = BlockPos.ORIGIN;
 
@@ -71,8 +71,8 @@ public final class ClientProxy {
                         final BlockPos nPos = pos.add(x, y, z);
                         final Block pBlock = world.getBlockState(nPos).getBlock();
                         if (pBlock instanceof BlockInvisibleLight) {
-                            synchronized (playerPlacedBlocks) {
-                                playerPlacedBlocks.add(nPos);
+                            synchronized (PLAYER_PLACED_BLOCKS) {
+                                PLAYER_PLACED_BLOCKS.add(nPos);
                             }
                         }
                     }
@@ -113,7 +113,7 @@ public final class ClientProxy {
         final double distance = placerEntity.getPosition().distanceSq(playerPos);
         if (distance < RADIUSPLAYER) {
             if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
-                playerPlacedBlocks.clear();
+                PLAYER_PLACED_BLOCKS.clear();
                 refill(playerPos, player.getEntityWorld());
             }
         }
@@ -121,8 +121,8 @@ public final class ClientProxy {
 
     @SubscribeEvent
     public static void blockBreakEvent(final BreakEvent event) {
-        synchronized (playerPlacedBlocks) {
-            playerPlacedBlocks.remove(event.getPos());
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.remove(event.getPos());
         }
     }
 
@@ -135,15 +135,15 @@ public final class ClientProxy {
         if (block instanceof BlockInvisibleLight) {
             final BlockPos pos = sp.getPosition();
             if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
-                synchronized (playerPlacedBlocks) {
-                    playerPlacedBlocks.clear();
+                synchronized (PLAYER_PLACED_BLOCKS) {
+                    PLAYER_PLACED_BLOCKS.clear();
                 }
                 dirty = true;
             }
             if (dirty) {
                 refill(pos, sp.world);
             }
-            if (playerPlacedBlocks.isEmpty())
+            if (PLAYER_PLACED_BLOCKS.isEmpty())
                 return;
             final double part = event.getPartialTicks();
             d1 = sp.lastTickPosX + (sp.posX - sp.lastTickPosX) * part;
@@ -151,8 +151,8 @@ public final class ClientProxy {
             d3 = sp.lastTickPosZ + (sp.posZ - sp.lastTickPosZ) * part;
 
             GlStateManager.disableTexture2D();
-            synchronized (playerPlacedBlocks) {
-                playerPlacedBlocks.forEach(posIn -> {
+            synchronized (PLAYER_PLACED_BLOCKS) {
+                PLAYER_PLACED_BLOCKS.forEach(posIn -> {
                     final Block blockIn = sp.world.getBlockState(posIn).getBlock();
                     final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
                             : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
@@ -160,8 +160,8 @@ public final class ClientProxy {
                 });
             }
             GlStateManager.enableTexture2D();
-        } else if (!playerPlacedBlocks.isEmpty()) {
-            playerPlacedBlocks.clear();
+        } else if (!PLAYER_PLACED_BLOCKS.isEmpty()) {
+            PLAYER_PLACED_BLOCKS.clear();
             dirty = true;
         }
     }
