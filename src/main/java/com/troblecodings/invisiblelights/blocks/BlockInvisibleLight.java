@@ -15,39 +15,37 @@ import net.minecraft.world.World;
 
 public class BlockInvisibleLight extends Block {
 
-	public BlockInvisibleLight(final int light) {
-		super(Block.Properties.create(Material.EARTH)
-				.lightValue(light)
-				.hardnessAndResistance(0.5f)
-				.notSolid());
-	}
+    public BlockInvisibleLight(final int light) {
+        super(Block.Properties.create(Material.EARTH).lightValue(light).hardnessAndResistance(0.5f)
+                .notSolid());
+    }
 
-	@Override
-	public BlockRenderType getRenderType(final BlockState state) {
-		return BlockRenderType.INVISIBLE;
-	}
+    @Override
+    public BlockRenderType getRenderType(final BlockState state) {
+        return BlockRenderType.INVISIBLE;
+    }
 
-	@Override
-	public VoxelShape getCollisionShape(final BlockState state, final IBlockReader worldIn, final BlockPos pos,
-			final ISelectionContext context) {
-		return VoxelShapes.empty();
-	}
+    @Override
+    public VoxelShape getCollisionShape(final BlockState state, final IBlockReader worldIn,
+            final BlockPos pos, final ISelectionContext context) {
+        return VoxelShapes.empty();
+    }
 
-	@Override
-	public VoxelShape getShape(final BlockState state, final IBlockReader worldIn, final BlockPos pos,
-			final ISelectionContext context) {
-		return VoxelShapes.fullCube();
-	}
+    @Override
+    public VoxelShape getShape(final BlockState state, final IBlockReader worldIn,
+            final BlockPos pos, final ISelectionContext context) {
+        return VoxelShapes.fullCube();
+    }
 
-	@Override
-	public boolean addHitEffects(final BlockState state, final World world, final RayTraceResult target,
-			final ParticleManager manager) {
-		return true;
-	}
+    @Override
+    public boolean addHitEffects(final BlockState state, final World world,
+            final RayTraceResult target, final ParticleManager manager) {
+        return true;
+    }
 
-	@Override
-	public boolean addDestroyEffects(final BlockState state, final World world, final BlockPos pos,
-			final ParticleManager manager) {
-		return true;
-	}
+    @Override
+    public boolean addDestroyEffects(final BlockState state, final World world, final BlockPos pos,
+            final ParticleManager manager) {
+        return true;
+    }
 }

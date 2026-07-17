@@ -22,7 +22,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,132 +36,141 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @OnlyIn(Dist.CLIENT)
 public final class ClientProxy {
 
-	private ClientProxy() {}
+    private ClientProxy() {
+    }
 
-	public static void onClientSetup(final FMLClientSetupEvent event) {
-		RenderTypeLookup.setRenderLayer(ILInit.GHOST_GLOWSTONE, RenderType.getCutoutMipped());
-	}
+    public static void onClientSetup(final FMLClientSetupEvent event) {
+        RenderTypeLookup.setRenderLayer(ILInit.GHOST_GLOWSTONE, RenderType.getCutoutMipped());
+    }
 
-	private static final int RADIUS = 50;
-	private static final int UPDATE_SPHERE = 50;
-	private static final int RADIUSPLAYER = RADIUS * RADIUS + 10;
+    private static final int RADIUS = 50;
+    private static final int UPDATE_SPHERE = 50;
+    private static final int RADIUSPLAYER = RADIUS * RADIUS + 10;
 
-	private static final float[] COLOR_NORMAL = new float[] { 0, 1, 0, 1 };
-	private static final float[] COLOR_BLOCKER = new float[] { 1, 0, 0, 1 };
-	private static final float[] COLOR_CUSTOM = new float[] { 1, 0.5f, 0, 1 };
+    private static final float[] COLOR_NORMAL = new float[] {
+            0, 1, 0, 1
+    };
+    private static final float[] COLOR_BLOCKER = new float[] {
+            1, 0, 0, 1
+    };
+    private static final float[] COLOR_CUSTOM = new float[] {
+            1, 0.5f, 0, 1
+    };
 
-	private static final ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
-	private static boolean dirty = true;
-	private static BlockPos lastPosition = BlockPos.ZERO;
+    private static final ArrayList<BlockPos> PLAYER_PLACED_BLOCKS = new ArrayList<>();
+    private static boolean dirty = true;
+    private static BlockPos lastPosition = BlockPos.ZERO;
 
-	public static void refill(final BlockPos pos, final World world) {
-		lastPosition = pos;
-		dirty = false;
-		new Thread(() -> {
-			for (int x = -RADIUS; x <= RADIUS; x++) {
-				for (int y = -RADIUS; y <= RADIUS; y++) {
-					for (int z = -RADIUS; z <= RADIUS; z++) {
-						final BlockPos nPos = pos.add(x, y, z);
-						final Block pBlock = world.getBlockState(nPos).getBlock();
-						if (pBlock instanceof BlockInvisibleLight) {
-							synchronized (playerPlacedBlocks) {
-								playerPlacedBlocks.add(nPos);
-							}
-						}
-					}
-				}
-			}
-		}).start();
-	}
+    public static void refill(final BlockPos pos, final World world) {
+        lastPosition = pos;
+        dirty = false;
+        new Thread(() -> {
+            for (int x = -RADIUS; x <= RADIUS; x++) {
+                for (int y = -RADIUS; y <= RADIUS; y++) {
+                    for (int z = -RADIUS; z <= RADIUS; z++) {
+                        final BlockPos nPos = pos.add(x, y, z);
+                        final Block pBlock = world.getBlockState(nPos).getBlock();
+                        if (pBlock instanceof BlockInvisibleLight) {
+                            synchronized (PLAYER_PLACED_BLOCKS) {
+                                PLAYER_PLACED_BLOCKS.add(nPos);
+                            }
+                        }
+                    }
+                }
+            }
+        }).start();
+    }
 
-	@SubscribeEvent
-	public static void renderOverlayEvent(final DrawHighlightEvent.HighlightBlock event) {
-		final BlockRayTraceResult result = event.getTarget();
-		final PlayerEntity player = Minecraft.getInstance().player;
-		if (player == null)
-			return;
-		final World world = player.getEntityWorld();
-		if (world == null)
-			return;
-		final BlockState state = world.getBlockState(result.getPos());
-		if (state.getBlock() instanceof BlockInvisibleLight)
-			event.setCanceled(true);
-	}
+    @SubscribeEvent
+    public static void renderOverlayEvent(final DrawHighlightEvent.HighlightBlock event) {
+        final BlockRayTraceResult result = event.getTarget();
+        final PlayerEntity player = Minecraft.getInstance().player;
+        if (player == null)
+            return;
+        final World world = player.getEntityWorld();
+        if (world == null)
+            return;
+        final BlockState state = world.getBlockState(result.getPos());
+        if (state.getBlock() instanceof BlockInvisibleLight) {
+            event.setCanceled(true);
+        }
+    }
 
-	@SubscribeEvent
-	public static void blockPlaceEvent(final EntityPlaceEvent event) {
-		final Entity placerEntity = event.getEntity();
-		if (placerEntity == null)
-			return;
-		final ClientPlayerEntity player = Minecraft.getInstance().player;
-		if (player == null)
-			return;
-		final BlockPos playerPos = player.getPosition();
-		final double distance = placerEntity.getPosition().distanceSq(playerPos);
-		if (distance < RADIUSPLAYER) {
-			if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
-				playerPlacedBlocks.clear();
-				refill(playerPos, player.getEntityWorld());
-			}
-		}
-	}
+    @SubscribeEvent
+    public static void blockPlaceEvent(final EntityPlaceEvent event) {
+        final Entity placerEntity = event.getEntity();
+        if (placerEntity == null)
+            return;
+        final ClientPlayerEntity player = Minecraft.getInstance().player;
+        if (player == null)
+            return;
+        final BlockPos playerPos = player.getPosition();
+        final double distance = placerEntity.getPosition().distanceSq(playerPos);
+        if (distance < RADIUSPLAYER) {
+            if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
+                PLAYER_PLACED_BLOCKS.clear();
+                refill(playerPos, player.getEntityWorld());
+            }
+        }
+    }
 
-	@SubscribeEvent
-	public static void blockBreakEvent(final BreakEvent event) {
-		synchronized (playerPlacedBlocks) {
-			playerPlacedBlocks.remove(event.getPos());
-		}
-	}
+    @SubscribeEvent
+    public static void blockBreakEvent(final BreakEvent event) {
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.remove(event.getPos());
+        }
+    }
 
-	@SubscribeEvent
-	public static void renderWorldLastEvent(final RenderWorldLastEvent event) {
-		final ClientPlayerEntity sp = Minecraft.getInstance().player;
-		if (sp == null)
-			return;
-		final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
-		if (!(block instanceof BlockInvisibleLight)) {
-			if (!playerPlacedBlocks.isEmpty()) {
-				playerPlacedBlocks.clear();
-				dirty = true;
-			}
-			return;
-		}
+    @SubscribeEvent
+    public static void renderWorldLastEvent(final RenderWorldLastEvent event) {
+        final ClientPlayerEntity sp = Minecraft.getInstance().player;
+        if (sp == null)
+            return;
+        final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
+        if (!(block instanceof BlockInvisibleLight)) {
+            if (!PLAYER_PLACED_BLOCKS.isEmpty()) {
+                PLAYER_PLACED_BLOCKS.clear();
+                dirty = true;
+            }
+            return;
+        }
 
-		final BlockPos pos = sp.getPosition();
-		if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
-			synchronized (playerPlacedBlocks) {
-				playerPlacedBlocks.clear();
-			}
-			dirty = true;
-		}
-		if (dirty)
-			refill(pos, sp.world);
-		if (playerPlacedBlocks.isEmpty())
-			return;
+        final BlockPos pos = sp.getPosition();
+        if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
+            synchronized (PLAYER_PLACED_BLOCKS) {
+                PLAYER_PLACED_BLOCKS.clear();
+            }
+            dirty = true;
+        }
+        if (dirty) {
+            refill(pos, sp.world);
+        }
+        if (PLAYER_PLACED_BLOCKS.isEmpty())
+            return;
 
-		final Vec3d view = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-		final MatrixStack matrixStack = event.getMatrixStack();
-		matrixStack.push();
-		matrixStack.translate(-view.x, -view.y, -view.z);
+        final Vec3d view =
+                Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        final MatrixStack matrixStack = event.getMatrixStack();
+        matrixStack.push();
+        matrixStack.translate(-view.x, -view.y, -view.z);
 
-		final IRenderTypeBuffer.Impl buffers = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-		final IVertexBuilder builder = buffers.getBuffer(RenderType.getLines());
+        final IRenderTypeBuffer.Impl buffers =
+                Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        final IVertexBuilder builder = buffers.getBuffer(RenderType.getLines());
 
-		synchronized (playerPlacedBlocks) {
-			playerPlacedBlocks.forEach(posIn -> {
-				final Block blockIn = sp.world.getBlockState(posIn).getBlock();
-				final float[] color = blockIn instanceof BlockLightBlocker
-						? COLOR_BLOCKER
-						: (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-				final AxisAlignedBB box = new AxisAlignedBB(
-						posIn.getX(), posIn.getY(), posIn.getZ(),
-						posIn.getX() + 1.0, posIn.getY() + 1.0, posIn.getZ() + 1.0);
-				WorldRenderer.drawBoundingBox(matrixStack, builder, box,
-						color[0], color[1], color[2], color[3]);
-			});
-		}
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.forEach(posIn -> {
+                final Block blockIn = sp.world.getBlockState(posIn).getBlock();
+                final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
+                        : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
+                final AxisAlignedBB box = new AxisAlignedBB(posIn.getX(), posIn.getY(),
+                        posIn.getZ(), posIn.getX() + 1.0, posIn.getY() + 1.0, posIn.getZ() + 1.0);
+                WorldRenderer.drawBoundingBox(matrixStack, builder, box, color[0], color[1],
+                        color[2], color[3]);
+            });
+        }
 
-		matrixStack.pop();
-		buffers.finish(RenderType.getLines());
-	}
+        matrixStack.pop();
+        buffers.finish(RenderType.getLines());
+    }
 }
