@@ -1,23 +1,14 @@
 # Invisible Lights
 
-[
-![Curseforge](https://cf.way2muchnoise.eu/title/535730.svg?badge_style=for_the_badge)
-![Curseforge Downloads](https://cf.way2muchnoise.eu/short_535730.svg?badge_style=for_the_badge)
-![Curseforge Versions](http://cf.way2muchnoise.eu/versions/535730.svg?badge_style=for_the_badge)
-](https://www.curseforge.com/minecraft/mc-mods/invisible-lights)
-[
-![Discord](https://img.shields.io/discord/166953995951276032?logo=discord&style=for-the-badge)
-](https://discord.gg/Um97SHnrYp)
-[
-![Buid](https://img.shields.io/appveyor/build/MrTroble/invisiblelights/master?logo=appveyor&style=for-the-badge)
-](https://ci.appveyor.com/project/MrTroble/invisiblelights)
-[
-![Sponsor](https://img.shields.io/github/sponsors/MrTroble?logo=github&style=for-the-badge)
-](https://github.com/sponsors/MrTroble)
+[![Versions](https://badges.moddingx.org/modrinth/versions/vzwkaFP2) ![Downloads](https://badges.moddingx.org/modrinth/downloads/vzwkaFP2)](https://modrinth.com/mod/invisiblelights)
+
+[![Versions](https://badges.moddingx.org/curseforge/versions/535730) ![Downloads](https://badges.moddingx.org/curseforge/downloads/535730)](https://www.curseforge.com/minecraft/mc-mods/invisible-lights)
+
+[![Discord](https://img.shields.io/discord/166953995951276032?logo=discord&style=for-the-badge)](https://discord.gg/E7qhYeR)
 
 ## This mod adds invisible light blocks to help you better illuminate your world.
 
-- Download on [curseforge](https://www.curseforge.com/minecraft/mc-mods/invisible-lights).  
+- Download on [Curseforge](https://www.curseforge.com/minecraft/mc-mods/invisible-lights) or [Modrinth](https://modrinth.com/mod/invisiblelights).  
 - Updates can be found in the [changelog](changelog.md).
 
 ## How to build this mod
