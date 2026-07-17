@@ -39,7 +39,8 @@ public final class ClientProxy {
     }
 
     public static void onClientSetup(final FMLClientSetupEvent event) {
-        ItemBlockRenderTypes.setRenderLayer(ILInit.GHOST_GLOWSTONE, RenderType.cutoutMipped());
+        ItemBlockRenderTypes.setRenderLayer(ILInit.GHOST_GLOWSTONE.get(),
+                RenderType.cutoutMipped());
     }
 
     private static final int RADIUS = 50;
