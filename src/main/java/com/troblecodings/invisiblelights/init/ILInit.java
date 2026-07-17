@@ -10,118 +10,86 @@ import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
 import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public final class ILInit {
+public class ILInit {
 
-    public static final CreativeTabs LIGHT_TAB = new CreativeTabs("invisiblelights") {
+	public static final ItemGroup LIGHT_TAB = new ItemGroup("invisiblelights") {
+		@Override
+		public ItemStack createIcon() {
+			return new ItemStack(INVISIBLE_LIGHTS_2);
+		}
+	};
 
-        @Override
-        public ItemStack getTabIconItem() {
-            return new ItemStack(INVISIBLE_LIGHTS_2);
-        }
-    };
+	public static final Block INVISIBLE_LIGHTS_2 = new BlockInvisibleLight(2);
+	public static final Block INVISIBLE_LIGHTS_3 = new BlockInvisibleLight(3);
+	public static final Block INVISIBLE_LIGHTS_4 = new BlockInvisibleLight(4);
+	public static final Block INVISIBLE_LIGHTS_5 = new BlockInvisibleLight(5);
+	public static final Block INVISIBLE_LIGHTS_6 = new BlockInvisibleLight(6);
+	public static final Block INVISIBLE_LIGHTS_7 = new BlockInvisibleLight(7);
+	public static final Block INVISIBLE_LIGHTS_8 = new BlockInvisibleLight(8);
+	public static final Block INVISIBLE_LIGHTS_9 = new BlockInvisibleLight(9);
+	public static final Block INVISIBLE_LIGHTS_10 = new BlockInvisibleLight(10);
+	public static final Block INVISIBLE_LIGHTS_11 = new BlockInvisibleLight(11);
+	public static final Block INVISIBLE_LIGHTS_12 = new BlockInvisibleLight(12);
+	public static final Block INVISIBLE_LIGHTS_13 = new BlockInvisibleLight(13);
+	public static final Block INVISIBLE_LIGHTS_14 = new BlockInvisibleLight(14);
+	public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
+	public static final Block BLOCKER = new BlockLightBlocker();
+	public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
 
-    private ILInit() {
-    }
+	public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
 
-    public static final Block INVISIBLE_LIGHTS_2 = new BlockInvisibleLight(2);
-    public static final Block INVISIBLE_LIGHTS_3 = new BlockInvisibleLight(3);
-    public static final Block INVISIBLE_LIGHTS_4 = new BlockInvisibleLight(4);
-    public static final Block INVISIBLE_LIGHTS_5 = new BlockInvisibleLight(5);
-    public static final Block INVISIBLE_LIGHTS_6 = new BlockInvisibleLight(6);
-    public static final Block INVISIBLE_LIGHTS_7 = new BlockInvisibleLight(7);
-    public static final Block INVISIBLE_LIGHTS_8 = new BlockInvisibleLight(8);
-    public static final Block INVISIBLE_LIGHTS_9 = new BlockInvisibleLight(9);
-    public static final Block INVISIBLE_LIGHTS_10 = new BlockInvisibleLight(10);
-    public static final Block INVISIBLE_LIGHTS_11 = new BlockInvisibleLight(11);
-    public static final Block INVISIBLE_LIGHTS_12 = new BlockInvisibleLight(12);
-    public static final Block INVISIBLE_LIGHTS_13 = new BlockInvisibleLight(13);
-    public static final Block INVISIBLE_LIGHTS_14 = new BlockInvisibleLight(14);
-    public static final Block INVISIBLE_LIGHTS_15 = new BlockInvisibleLight(15);
-    public static final Block BLOCKER = new BlockLightBlocker();
-    public static final BlockGhostGlowstone GHOST_GLOWSTONE = new BlockGhostGlowstone();
+	public static void init() {
+		for (final Field field : ILInit.class.getFields()) {
+			final int modifiers = field.getModifiers();
+			if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers))
+				continue;
+			try {
+				final Object obj = field.get(null);
+				if (!(obj instanceof Block))
+					continue;
+				final Block block = (Block) obj;
+				final String name = field.getName().toLowerCase().replace("_", "");
+				block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
+				blocksToRegister.add(block);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				InvisibleLightsMain.LOG.error("Could not access field {}", field.getName(), e);
+			}
+		}
+	}
 
-    public static final ArrayList<Block> BLOCKS_TO_REGISTER = new ArrayList<>();
-    public static final ArrayList<Item> ITEMS_TO_REGISTER = new ArrayList<>();
+	public static void registerBlocks(final RegistryEvent.Register<Block> event) {
+		final IForgeRegistry<Block> registry = event.getRegistry();
+		blocksToRegister.forEach(registry::register);
+	}
 
-    public static void init() {
-        final Field[] fields = ILInit.class.getFields();
-        for (final Field field : fields) {
-            final int modifiers = field.getModifiers();
-            if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers)
-                    && Modifier.isPublic(modifiers)) {
-                final String name = field.getName().toLowerCase().replace("_", "");
-                try {
-                    final Object obj = field.get(null);
-                    if (obj instanceof Block) {
-                        final Block block = (Block) obj;
-                        block.setRegistryName(
-                                new ResourceLocation(InvisibleLightsMain.MODID, name));
-                        block.setUnlocalizedName(name);
-                        BLOCKS_TO_REGISTER.add(block);
-                        if (block instanceof ITileEntityProvider) {
-                            final ITileEntityProvider provider = (ITileEntityProvider) block;
-                            try {
-                                final Class<? extends TileEntity> tileclass =
-                                        provider.createNewTileEntity(null, 0).getClass();
-                                TileEntity.register(tileclass.getSimpleName().toLowerCase(),
-                                        tileclass);
-                            } catch (final NullPointerException ex) {
-                                InvisibleLightsMain.log
-                                        .trace("All tileentity provide need to call back"
-                                                + "a default entity if the world is null!", ex);
-                            }
-                        }
-                    }
-                    if (obj instanceof Item) {
-                        final Item item = (Item) obj;
-                        item.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
-                        item.setUnlocalizedName(name);
-                        ITEMS_TO_REGISTER.add(item);
-                    }
-                } catch (final IllegalArgumentException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+	public static void registerItems(final RegistryEvent.Register<Item> event) {
+		final IForgeRegistry<Item> registry = event.getRegistry();
+		blocksToRegister.forEach(block -> {
+			final BlockItem item = new BlockItem(block, new Item.Properties().group(LIGHT_TAB));
+			item.setRegistryName(block.getRegistryName());
+			registry.register(item);
+		});
+	}
 
-    @SubscribeEvent
-    public static void registerBlock(final RegistryEvent.Register<Block> event) {
-        final IForgeRegistry<Block> registry = event.getRegistry();
-        BLOCKS_TO_REGISTER.forEach(registry::register);
-    }
-
-    @SubscribeEvent
-    public static void registerItem(final RegistryEvent.Register<Item> event) {
-        final IForgeRegistry<Item> registry = event.getRegistry();
-        BLOCKS_TO_REGISTER.forEach(block -> registry
-                .register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
-        ITEMS_TO_REGISTER.forEach(registry::register);
-    }
-
-    @SubscribeEvent
-    public static void blockBreakEvent(final BreakEvent event) {
-        final Block block = event.getState().getBlock();
-        if (block instanceof BlockInvisibleLight) {
-            final EntityPlayer player = event.getPlayer();
-            final Item item = player.getHeldItemMainhand().getItem();
-            if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
-                event.setCanceled(true);
-                return;
-            }
-        }
-    }
+	@SubscribeEvent
+	public static void blockBreakEven(final BreakEvent event) {
+		if (!(event.getState().getBlock() instanceof BlockInvisibleLight))
+			return;
+		final PlayerEntity player = event.getPlayer();
+		final Item item = player.getHeldItemMainhand().getItem();
+		if (!(Block.getBlockFromItem(item) instanceof BlockInvisibleLight)) {
+			event.setCanceled(true);
+		}
+	}
 }
