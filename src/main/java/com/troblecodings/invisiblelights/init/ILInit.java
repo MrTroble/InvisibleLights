@@ -19,7 +19,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ILInit {
+public final class ILInit {
 
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, InvisibleLightsMain.MODID);
@@ -64,6 +64,9 @@ public class ILInit {
     public static final RegistryObject<Block> BLOCKER = register("blocker", BlockLightBlocker::new);
     public static final RegistryObject<BlockGhostGlowstone> GHOST_GLOWSTONE =
             register("ghostglowstone", BlockGhostGlowstone::new);
+
+    private ILInit() {
+    }
 
     private static RegistryObject<Block> registerLight(final String name, final int level) {
         return register(name, () -> new BlockInvisibleLight(level));

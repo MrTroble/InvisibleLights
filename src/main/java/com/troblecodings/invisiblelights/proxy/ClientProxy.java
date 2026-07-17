@@ -57,7 +57,7 @@ public final class ClientProxy {
             1, 0.5f, 0, 1
     };
 
-    private static final ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
+    private static final ArrayList<BlockPos> PLAYER_PLACED_BLOCKS = new ArrayList<>();
     private static boolean dirty = true;
     private static BlockPos lastPosition = BlockPos.ZERO;
 
@@ -71,8 +71,8 @@ public final class ClientProxy {
                         final BlockPos nPos = pos.offset(x, y, z);
                         final Block pBlock = level.getBlockState(nPos).getBlock();
                         if (pBlock instanceof BlockInvisibleLight) {
-                            synchronized (playerPlacedBlocks) {
-                                playerPlacedBlocks.add(nPos);
+                            synchronized (PLAYER_PLACED_BLOCKS) {
+                                PLAYER_PLACED_BLOCKS.add(nPos);
                             }
                         }
                     }
@@ -108,7 +108,7 @@ public final class ClientProxy {
         final double distance = placerEntity.blockPosition().distSqr(playerPos);
         if (distance < RADIUSPLAYER) {
             if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
-                playerPlacedBlocks.clear();
+                PLAYER_PLACED_BLOCKS.clear();
                 refill(playerPos, player.level);
             }
         }
@@ -116,8 +116,8 @@ public final class ClientProxy {
 
     @SubscribeEvent
     public static void blockBreakEvent(final BreakEvent event) {
-        synchronized (playerPlacedBlocks) {
-            playerPlacedBlocks.remove(event.getPos());
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.remove(event.getPos());
         }
     }
 
@@ -128,8 +128,8 @@ public final class ClientProxy {
             return;
         final Block block = Block.byItem(sp.getMainHandItem().getItem());
         if (!(block instanceof BlockInvisibleLight)) {
-            if (!playerPlacedBlocks.isEmpty()) {
-                playerPlacedBlocks.clear();
+            if (!PLAYER_PLACED_BLOCKS.isEmpty()) {
+                PLAYER_PLACED_BLOCKS.clear();
                 dirty = true;
             }
             return;
@@ -137,15 +137,15 @@ public final class ClientProxy {
 
         final BlockPos pos = sp.blockPosition();
         if (pos.distSqr(lastPosition) > UPDATE_SPHERE) {
-            synchronized (playerPlacedBlocks) {
-                playerPlacedBlocks.clear();
+            synchronized (PLAYER_PLACED_BLOCKS) {
+                PLAYER_PLACED_BLOCKS.clear();
             }
             dirty = true;
         }
         if (dirty) {
             refill(pos, sp.level);
         }
-        if (playerPlacedBlocks.isEmpty())
+        if (PLAYER_PLACED_BLOCKS.isEmpty())
             return;
 
         final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -157,8 +157,8 @@ public final class ClientProxy {
                 Minecraft.getInstance().renderBuffers().bufferSource();
         final VertexConsumer builder = buffers.getBuffer(RenderType.lines());
 
-        synchronized (playerPlacedBlocks) {
-            playerPlacedBlocks.forEach(posIn -> {
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.forEach(posIn -> {
                 final Block blockIn = sp.level.getBlockState(posIn).getBlock();
                 final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
                         : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
