@@ -7,14 +7,14 @@ import com.troblecodings.invisiblelights.blocks.BlockGhostGlowstone;
 import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
 import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.DeferredRegister;
@@ -27,6 +27,8 @@ public final class ILInit {
             DeferredRegister.create(ForgeRegistries.BLOCKS, InvisibleLightsMain.MODID);
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, InvisibleLightsMain.MODID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, InvisibleLightsMain.MODID);
 
     public static final RegistryObject<Block> INVISIBLE_LIGHTS_2 =
             registerLight("invisiblelights2", 2);
@@ -63,6 +65,15 @@ public final class ILInit {
     private ILInit() {
     }
 
+    public static final RegistryObject<CreativeModeTab> INVISIBLE_LIGHTS_TAB =
+            CREATIVE_MODE_TABS.register("invisiblelights",
+                    () -> CreativeModeTab.builder()
+                            .title(Component.translatable("itemGroup.invisiblelights"))
+                            .icon(() -> new ItemStack(INVISIBLE_LIGHTS_2.get()))
+                            .displayItems((params, output) -> ITEMS.getEntries()
+                                    .forEach(item -> output.accept(item.get())))
+                            .build());
+
     private static RegistryObject<Block> registerLight(final String name, final int level) {
         return register(name, () -> new BlockInvisibleLight(level));
     }
@@ -72,15 +83,6 @@ public final class ILInit {
         final RegistryObject<B> block = BLOCKS.register(name, blockFactory);
         ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
-    }
-
-    public static void registerCreativeTab(final CreativeModeTabEvent.Register event) {
-        event.registerCreativeModeTab(
-                new ResourceLocation(InvisibleLightsMain.MODID, "invisiblelights"),
-                builder -> builder.title(Component.translatable("itemGroup.invisiblelights"))
-                        .icon(() -> new ItemStack(INVISIBLE_LIGHTS_2.get()))
-                        .displayItems((params, output) -> ITEMS.getEntries()
-                                .forEach(item -> output.accept(item.get()))));
     }
 
     @SubscribeEvent

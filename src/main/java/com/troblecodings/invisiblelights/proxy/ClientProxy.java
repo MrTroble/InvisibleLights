@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 import net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -87,7 +87,7 @@ public final class ClientProxy {
         final Player player = Minecraft.getInstance().player;
         if (player == null)
             return;
-        final Level level = player.level;
+        final Level level = player.level();
         if (level == null)
             return;
         final BlockState state = level.getBlockState(result.getBlockPos());
@@ -109,7 +109,7 @@ public final class ClientProxy {
         if (distance < RADIUSPLAYER) {
             if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
                 PLAYER_PLACED_BLOCKS.clear();
-                refill(playerPos, player.level);
+                refill(playerPos, player.level());
             }
         }
     }
@@ -122,7 +122,9 @@ public final class ClientProxy {
     }
 
     @SubscribeEvent
-    public static void renderWorldLastEvent(final RenderLevelLastEvent event) {
+    public static void renderWorldLastEvent(final RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES)
+            return;
         final LocalPlayer sp = Minecraft.getInstance().player;
         if (sp == null)
             return;
@@ -143,7 +145,7 @@ public final class ClientProxy {
             dirty = true;
         }
         if (dirty) {
-            refill(pos, sp.level);
+            refill(pos, sp.level());
         }
         if (PLAYER_PLACED_BLOCKS.isEmpty())
             return;
@@ -159,7 +161,7 @@ public final class ClientProxy {
 
         synchronized (PLAYER_PLACED_BLOCKS) {
             PLAYER_PLACED_BLOCKS.forEach(posIn -> {
-                final Block blockIn = sp.level.getBlockState(posIn).getBlock();
+                final Block blockIn = sp.level().getBlockState(posIn).getBlock();
                 final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
                         : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
                 final AABB box = new AABB(posIn.getX(), posIn.getY(), posIn.getZ(),

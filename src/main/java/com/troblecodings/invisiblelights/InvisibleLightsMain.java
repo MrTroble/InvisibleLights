@@ -33,7 +33,7 @@ public class InvisibleLightsMain {
         final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ILInit.BLOCKS.register(modBus);
         ILInit.ITEMS.register(modBus);
-        modBus.addListener(ILInit::registerCreativeTab);
+        ILInit.CREATIVE_MODE_TABS.register(modBus);
         DistExecutor.runWhenOn(Dist.CLIENT,
                 () -> () -> modBus.addListener(ClientProxy::onClientSetup));
 
