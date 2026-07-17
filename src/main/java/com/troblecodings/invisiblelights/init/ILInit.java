@@ -1,13 +1,14 @@
-package eu.gir.basics.init;
+package com.troblecodings.invisiblelights.init;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
-import eu.gir.basics.GIRMain;
-import eu.gir.basics.blocks.BlockGhostGlowstone;
-import eu.gir.basics.blocks.BlockInvisibleLight;
-import eu.gir.basics.blocks.BlockLightBlocker;
+import com.troblecodings.invisiblelights.InvisibleLightsMain;
+import com.troblecodings.invisiblelights.blocks.BlockGhostGlowstone;
+import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
+import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -20,7 +21,7 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class GIRInit {
+public class ILInit {
 
 	public static final ItemGroup LIGHT_TAB = new ItemGroup("invisiblelights") {
 		@Override
@@ -49,7 +50,7 @@ public class GIRInit {
 	public static final ArrayList<Block> blocksToRegister = new ArrayList<>();
 
 	public static void init() {
-		for (final Field field : GIRInit.class.getFields()) {
+		for (final Field field : ILInit.class.getFields()) {
 			final int modifiers = field.getModifiers();
 			if (!Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers) || !Modifier.isPublic(modifiers))
 				continue;
@@ -59,10 +60,10 @@ public class GIRInit {
 					continue;
 				final Block block = (Block) obj;
 				final String name = field.getName().toLowerCase().replace("_", "");
-				block.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
+				block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
 				blocksToRegister.add(block);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
-				GIRMain.LOG.error("Could not access field {}", field.getName(), e);
+				InvisibleLightsMain.LOG.error("Could not access field {}", field.getName(), e);
 			}
 		}
 	}

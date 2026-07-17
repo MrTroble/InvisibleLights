@@ -1,9 +1,10 @@
-package eu.gir.basics;
+package com.troblecodings.invisiblelights;
 
 import java.util.List;
 
-import eu.gir.basics.blocks.BlockCustomLight;
-import eu.gir.basics.blocks.BlockCustomState;
+import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
+import com.troblecodings.invisiblelights.blocks.BlockCustomState;
+
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 
@@ -13,7 +14,7 @@ public final class BlockLists {
 	private List<String> statebased;
 
 	private static Block register(final Block block, final String name) {
-		block.setRegistryName(new ResourceLocation(GIRMain.MODID, name));
+		block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
 		return block;
 	}
 

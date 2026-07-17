@@ -1,10 +1,11 @@
-package eu.gir.basics.proxy;
+package com.troblecodings.invisiblelights.proxy;
 
 import java.util.ArrayList;
 
-import eu.gir.basics.blocks.BlockCustomLight;
-import eu.gir.basics.blocks.BlockInvisibleLight;
-import eu.gir.basics.blocks.BlockLightBlocker;
+import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
+import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
+import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

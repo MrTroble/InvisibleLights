@@ -1,4 +1,4 @@
-package eu.gir.basics;
+package com.troblecodings.invisiblelights;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.troblecodings.invisiblelights.init.ILInit;
+import com.troblecodings.invisiblelights.proxy.ClientProxy;
 
-import eu.gir.basics.init.GIRInit;
-import eu.gir.basics.proxy.ClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
@@ -23,21 +23,21 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 
-@Mod(GIRMain.MODID)
-public class GIRMain {
+@Mod(InvisibleLightsMain.MODID)
+public class InvisibleLightsMain {
 
 	public static final String MODID = "invisiblelights";
 	public static final Logger LOG = LogManager.getLogger(MODID);
 
-	public GIRMain() {
-		GIRInit.init();
+	public InvisibleLightsMain() {
+		ILInit.init();
 		loadCustomBlocks();
 
 		final FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
-		ctx.getModEventBus().addGenericListener(Block.class, GIRInit::registerBlocks);
-		ctx.getModEventBus().addGenericListener(Item.class, GIRInit::registerItems);
+		ctx.getModEventBus().addGenericListener(Block.class, ILInit::registerBlocks);
+		ctx.getModEventBus().addGenericListener(Item.class, ILInit::registerItems);
 
-		MinecraftForge.EVENT_BUS.register(GIRInit.class);
+		MinecraftForge.EVENT_BUS.register(ILInit.class);
 		DistExecutor.runWhenOn(Dist.CLIENT,
 				() -> () -> MinecraftForge.EVENT_BUS.register(ClientProxy.class));
 	}
@@ -50,7 +50,7 @@ public class GIRMain {
 		}
 		final Gson gson = new Gson();
 		try (final Reader reader = Files.newBufferedReader(path)) {
-			gson.fromJson(reader, BlockLists.class).addToList(GIRInit.blocksToRegister);
+			gson.fromJson(reader, BlockLists.class).addToList(ILInit.blocksToRegister);
 		} catch (final IOException e) {
 			LOG.error("Could not read {}", path, e);
 		} catch (final JsonSyntaxException e) {

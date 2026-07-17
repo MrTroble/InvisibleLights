@@ -1,4 +1,4 @@
-package eu.gir.basics.blocks;
+package com.troblecodings.invisiblelights.blocks;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
