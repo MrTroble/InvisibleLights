@@ -21,7 +21,7 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class ILInit {
+public final class ILInit {
 
     public static final ItemGroup LIGHT_TAB = new ItemGroup("invisiblelights") {
         @Override
@@ -68,7 +68,7 @@ public class ILInit {
                 final String name = field.getName().toLowerCase().replace("_", "");
                 block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
                 BLOCKS_TO_REGISTER.add(block);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
+            } catch (final IllegalArgumentException | IllegalAccessException e) {
                 InvisibleLightsMain.LOG.error("Could not access field {}", field.getName(), e);
             }
         }
