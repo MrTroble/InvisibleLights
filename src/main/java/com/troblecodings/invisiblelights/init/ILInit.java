@@ -79,7 +79,7 @@ public final class ILInit {
                 new ResourceLocation(InvisibleLightsMain.MODID, "invisiblelights"),
                 builder -> builder.title(Component.translatable("itemGroup.invisiblelights"))
                         .icon(() -> new ItemStack(INVISIBLE_LIGHTS_2.get()))
-                        .displayItems((flags, output, hasPermissions) -> ITEMS.getEntries()
+                        .displayItems((params, output) -> ITEMS.getEntries()
                                 .forEach(item -> output.accept(item.get()))));
     }
 
