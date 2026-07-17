@@ -1,27 +1,27 @@
 modLoader="javafml"
-loaderVersion="[28,)"
-issueTrackerURL="https://discord.gg/Va5P7KBry6"
+loaderVersion="["${forgeversion}",)"
+issueTrackerURL="https://github.com/MrTroble/InvisibleLights/issues"
+license="Apache License Version 2.0"
 
 [[mods]]
-modId="invisiblelights"
+modId="${modid}"
 version="${version}"
-displayName="Invisible Lights"
-authors="MrTroble, Jeronimo"
+displayName="${modname}"
+displayURL="https://troblecodings.com/"
+authors="${author}"
 credits="German Immersive Railroading Community"
-description='''
-Adds invisible lights.
-'''
+description="Adds invisible lights."
 
-[[dependencies.invisiblelights]]
+[[dependencies.${modid}]]
     modId="forge"
     mandatory=true
-    versionRange="[28,)"
+    versionRange="["${forgeversion}",)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.invisiblelights]]
+[[dependencies.${modid}]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.4]"
+    versionRange="["${mcversion}"]"
     ordering="NONE"
     side="BOTH"
