@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.19.3 - 1.1.0]
+
+* port: 1.19.3
+
 ## [Fix]
 
 * fix: redstone update

@@ -1,17 +1,16 @@
 modLoader="javafml"
 loaderVersion="[45,)"
-license="Apache-2.0"
-issueTrackerURL="https://discord.gg/Va5P7KBry6"
+issueTrackerURL="https://github.com/MrTroble/InvisibleLights/issues"
+license="Apache License Version 2.0"
 
 [[mods]]
 modId="invisiblelights"
-version="${version}"
+version="${file.jarVersion}"
 displayName="Invisible Lights"
-authors="MrTroble, Jeronimo"
+displayURL="https://troblecodings.com/"
+authors="MrTroble, Jeronimo, Luex"
 credits="German Immersive Railroading Community"
-description='''
-Adds invisible lights.
-'''
+description="Adds invisible lights."
 
 [[dependencies.invisiblelights]]
     modId="forge"
