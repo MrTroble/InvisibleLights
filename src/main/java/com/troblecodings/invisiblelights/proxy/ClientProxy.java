@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +24,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RenderHighlightEvent;
@@ -32,7 +31,6 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 
-@OnlyIn(Dist.CLIENT)
 public final class ClientProxy {
 
     private ClientProxy() {
@@ -40,7 +38,7 @@ public final class ClientProxy {
 
     public static void onClientSetup(final FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(ILInit.GHOST_GLOWSTONE.get(),
-                RenderType.cutoutMipped());
+                ChunkSectionLayer.CUTOUT_MIPPED);
     }
 
     private static final int RADIUS = 50;
@@ -122,9 +120,7 @@ public final class ClientProxy {
     }
 
     @SubscribeEvent
-    public static void renderWorldLastEvent(final RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES)
-            return;
+    public static void renderWorldLastEvent(final RenderLevelStageEvent.AfterParticles event) {
         final LocalPlayer sp = Minecraft.getInstance().player;
         if (sp == null)
             return;
