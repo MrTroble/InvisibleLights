@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.21.1 - 1.1.0]
+
+* port: 1.21.1 Neoforge
+
 ## [Fix]
 
 * fix: redstone update
