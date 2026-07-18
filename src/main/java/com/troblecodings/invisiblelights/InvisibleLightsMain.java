@@ -1,4 +1,4 @@
-package eu.gir.basics;
+package com.troblecodings.invisiblelights;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.troblecodings.invisiblelights.init.ILInit;
+import com.troblecodings.invisiblelights.proxy.ClientProxy;
 
-import eu.gir.basics.init.GIRInit;
-import eu.gir.basics.proxy.ClientProxy;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -20,20 +20,20 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 
-@Mod(GIRMain.MODID)
-public class GIRMain {
+@Mod(InvisibleLightsMain.MODID)
+public class InvisibleLightsMain {
 
 	public static final String MODID = "invisiblelights";
 	public static final Logger LOG = LogManager.getLogger(MODID);
 
-	public GIRMain(final IEventBus modBus, final ModContainer container, final Dist dist) {
+	public InvisibleLightsMain(final IEventBus modBus, final ModContainer container, final Dist dist) {
 		loadCustomBlocks();
 
-		GIRInit.BLOCKS.register(modBus);
-		GIRInit.ITEMS.register(modBus);
-		GIRInit.CREATIVE_MODE_TABS.register(modBus);
+		ILInit.BLOCKS.register(modBus);
+		ILInit.ITEMS.register(modBus);
+		ILInit.CREATIVE_MODE_TABS.register(modBus);
 
-		NeoForge.EVENT_BUS.register(GIRInit.class);
+		NeoForge.EVENT_BUS.register(ILInit.class);
 
 		if (dist.isClient()) {
 			modBus.addListener(ClientProxy::onClientSetup);

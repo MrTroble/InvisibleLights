@@ -1,14 +1,14 @@
-package eu.gir.basics.proxy;
+package com.troblecodings.invisiblelights.proxy;
 
 import java.util.ArrayList;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
+import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
+import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
+import com.troblecodings.invisiblelights.init.ILInit;
 
-import eu.gir.basics.blocks.BlockCustomLight;
-import eu.gir.basics.blocks.BlockInvisibleLight;
-import eu.gir.basics.blocks.BlockLightBlocker;
-import eu.gir.basics.init.GIRInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -38,7 +38,7 @@ public final class ClientProxy {
 	private ClientProxy() {}
 
 	public static void onClientSetup(final FMLClientSetupEvent event) {
-		ItemBlockRenderTypes.setRenderLayer(GIRInit.GHOST_GLOWSTONE.get(), RenderType.cutoutMipped());
+		ItemBlockRenderTypes.setRenderLayer(ILInit.GHOST_GLOWSTONE.get(), RenderType.cutoutMipped());
 	}
 
 	private static final int RADIUS = 50;

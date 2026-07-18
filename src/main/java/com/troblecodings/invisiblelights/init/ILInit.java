@@ -1,11 +1,12 @@
-package eu.gir.basics.init;
+package com.troblecodings.invisiblelights.init;
 
 import java.util.function.Supplier;
 
-import eu.gir.basics.GIRMain;
-import eu.gir.basics.blocks.BlockGhostGlowstone;
-import eu.gir.basics.blocks.BlockInvisibleLight;
-import eu.gir.basics.blocks.BlockLightBlocker;
+import com.troblecodings.invisiblelights.InvisibleLightsMain;
+import com.troblecodings.invisiblelights.blocks.BlockGhostGlowstone;
+import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
+import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -19,11 +20,11 @@ import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class GIRInit {
+public class ILInit {
 
-	public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(GIRMain.MODID);
-	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(GIRMain.MODID);
-	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GIRMain.MODID);
+	public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(InvisibleLightsMain.MODID);
+	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(InvisibleLightsMain.MODID);
+	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, InvisibleLightsMain.MODID);
 
 	public static final DeferredHolder<Block, Block> INVISIBLE_LIGHTS_2 = registerLight("invisiblelights2", 2);
 	public static final DeferredHolder<Block, Block> INVISIBLE_LIGHTS_3 = registerLight("invisiblelights3", 3);
