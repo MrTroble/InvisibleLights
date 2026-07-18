@@ -11,8 +11,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BlockInvisibleLight extends Block {
 
-    public BlockInvisibleLight(final int light) {
-        super(Block.Properties.of().lightLevel(state -> light).strength(0.5f).noOcclusion());
+    public BlockInvisibleLight(final Block.Properties props, final int light) {
+        super(props.lightLevel(state -> light).strength(0.5f).noOcclusion());
     }
 
     @Override

@@ -12,9 +12,9 @@ import com.troblecodings.invisiblelights.init.ILInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -162,7 +162,7 @@ public final class ClientProxy {
                 final Block blockIn = sp.level().getBlockState(posIn).getBlock();
                 final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
                         : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-                LevelRenderer.renderLineBox(poseStack, builder, posIn.getX() - view.x,
+                ShapeRenderer.renderLineBox(poseStack, builder, posIn.getX() - view.x,
                         posIn.getY() - view.y, posIn.getZ() - view.z, posIn.getX() + 1.0 - view.x,
                         posIn.getY() + 1.0 - view.y, posIn.getZ() + 1.0 - view.z, color[0],
                         color[1], color[2], color[3]);

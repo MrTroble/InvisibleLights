@@ -1,18 +1,16 @@
 package com.troblecodings.invisiblelights.blocks;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockLightBlocker extends BlockInvisibleLight {
 
-    public BlockLightBlocker() {
-        super(0);
+    public BlockLightBlocker(final Block.Properties props) {
+        super(props, 0);
     }
 
     @Override
-    public int getLightBlock(final BlockState state, final BlockGetter worldIn,
-            final BlockPos pos) {
+    protected int getLightBlock(final BlockState state) {
         return 15;
     }
 }

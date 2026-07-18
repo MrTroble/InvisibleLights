@@ -8,13 +8,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 
 public class BlockCustomState extends BlockCustomLight {
 
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 
-    public BlockCustomState(final int light) {
-        super(light);
+    public BlockCustomState(final Block.Properties props, final int light) {
+        super(props, light);
         registerDefaultState(this.stateDefinition.any().setValue(POWERED, false));
     }
 
@@ -43,8 +44,8 @@ public class BlockCustomState extends BlockCustomLight {
     }
 
     @Override
-    public void neighborChanged(final BlockState state, final Level level, final BlockPos pos,
-            final Block blockIn, final BlockPos fromPos, final boolean isMoving) {
+    protected void neighborChanged(final BlockState state, final Level level, final BlockPos pos,
+            final Block blockIn, final Orientation orientation, final boolean isMoving) {
         updatePowerState(state, level, pos);
     }
 
