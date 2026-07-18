@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.21.4 - 1.1.0]
+## [1.21.5 - 1.1.0]
 
-* port: 1.21.4 Neoforge
+* port: 1.21.5 Neoforge
 
 ## [Fix]
 
