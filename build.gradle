@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies {
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
+        classpath "com.modrinth.minotaur:Minotaur:2.+"
     }
 }
 
@@ -13,46 +14,22 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.171'
+    id 'net.neoforged.gradle.userdev' version '7.1.+'
 }
 
 apply plugin: "com.matthewprenger.cursegradle"
+apply plugin: 'com.modrinth.minotaur'
 
-repositories {
-    mavenCentral()
-    maven {
-        name = 'NeoForged'
-        url = 'https://maven.neoforged.net/releases'
-    }
-    maven {
-        name = 'Mojang'
-        url = 'https://libraries.minecraft.net/'
-    }
+group = project.mod_group
+version = project.mod_version
+
+base {
+    archivesName = "${project.mod_name}-${project.minecraft_version}-${project.loader}"
 }
 
-def ver = System.getenv("APPVEYOR_BUILD_VERSION")
-if(ver == null)
-	ver = '0.0.0'
-
-def key = System.getenv("CURSETOKEN")
-if(key == null)
-	key = 'dev'
-curseforge {
-  apiKey = key
-  project {
-    id = '535730'
-    changelog = file('changelog.md')
-    releaseType = 'release'
-    changelogType = 'markdown'
-    addGameVersion '1.21.1'
-  }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(project.java_version.toInteger())
 }
-
-version = ver
-group = 'eu.gir'
-base.archivesName = 'invisiblelights'
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 runs {
     configureEach {
@@ -70,27 +47,58 @@ runs {
 }
 
 dependencies {
-    implementation 'net.neoforged:neoforge:21.1.228'
+    implementation "net.neoforged:neoforge:${project.neoforge_version}"
 }
 
 jar {
     manifest {
         attributes([
-            "Specification-Title": "invisiblelights",
-            "Specification-Vendor": "German Immersive Railroading Community",
-            "Specification-Version": ver,
-            "Implementation-Title": project.name,
-            "Implementation-Version": ver,
-            "Implementation-Vendor" :"German Immersive Railroading Community",
-            "Implementation-Timestamp": new Date().format("dd-MM-yyyy'T'HH:mm:ssZ")
+            "Specification-Title": project.mod_name,
+            "Specification-Vendor": "troblecodings",
+            "Specification-Version": project.version,
+            "Implementation-Title": project.mod_name,
+            "Implementation-Version": project.version,
+            "Implementation-Vendor": "troblecodings",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
 
-processResources {
-    inputs.property "version", ver
+def key = System.getenv("CURSETOKEN")
+if (key == null)
+    key = 'dev'
 
-    filesMatching("META-INF/neoforge.mods.toml") {
-        expand "version": ver
+curseforge {
+    apiKey = key 
+
+    project {
+        id = project.curseforge_project_id
+
+        changelog = file("changelog.md")
+        changelogType = "markdown"
+
+        releaseType = "release"
+
+        addGameVersion project.minecraft_version
     }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+
+    projectId = project.modrinth_project_id
+
+    versionNumber = project.version
+    versionName = "${project.mod_name} ${project.version}"
+
+    uploadFile = jar
+
+    gameVersions = [project.minecraft_version]
+    loaders = [project.loader.toLowerCase()]
+
+    changelog = file("changelog.md").text
+}
+
+tasks.register("publishMods") {
+    dependsOn("curseforge", "modrinth")
 }
