@@ -1,7 +1,7 @@
 {
     "pack": {
-        "description": "gir mod resources",
-        "pack_format": 84,
+        "description": "Invisible lights mod resources",
+        "pack_format": 84.0,
         "min_format": [84, 0],
         "max_format": [84, 0]
     }
