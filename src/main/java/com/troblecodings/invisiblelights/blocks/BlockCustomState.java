@@ -26,7 +26,7 @@ public class BlockCustomState extends BlockCustomLight {
     }
 
     private void updatePowerState(final BlockState state, final Level level, final BlockPos pos) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
         final boolean lastPowered = state.getValue(POWERED);
         if (level.hasNeighborSignal(pos) && !lastPowered) {
