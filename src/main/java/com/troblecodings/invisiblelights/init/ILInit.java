@@ -15,7 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -80,13 +80,13 @@ public final class ILInit {
     public static <B extends Block> DeferredBlock<B> register(final String name,
             final Function<Block.Properties, B> blockFactory) {
         final DeferredBlock<B> block =
-                BLOCKS.registerBlock(name, blockFactory, Block.Properties.of());
+                BLOCKS.registerBlock(name, blockFactory, () -> Block.Properties.of());
         ITEMS.registerSimpleBlockItem(block);
         return block;
     }
 
     @SubscribeEvent
-    public static void blockBreakEven(final BreakEvent event) {
+    public static void blockBreakEven(final BreakBlockEvent event) {
         if (!(event.getState().getBlock() instanceof BlockInvisibleLight))
             return;
         final Player player = event.getPlayer();
