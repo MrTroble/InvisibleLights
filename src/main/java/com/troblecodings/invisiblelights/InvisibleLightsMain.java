@@ -23,37 +23,38 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(InvisibleLightsMain.MODID)
 public class InvisibleLightsMain {
 
-	public static final String MODID = "invisiblelights";
-	public static final Logger LOG = LogManager.getLogger(MODID);
+    public static final String MODID = "invisiblelights";
+    public static final Logger LOG = LogManager.getLogger(MODID);
 
-	public InvisibleLightsMain(final IEventBus modBus, final ModContainer container, final Dist dist) {
-		loadCustomBlocks();
+    public InvisibleLightsMain(final IEventBus modBus, final ModContainer container,
+            final Dist dist) {
+        loadCustomBlocks();
 
-		ILInit.BLOCKS.register(modBus);
-		ILInit.ITEMS.register(modBus);
-		ILInit.CREATIVE_MODE_TABS.register(modBus);
+        ILInit.BLOCKS.register(modBus);
+        ILInit.ITEMS.register(modBus);
+        ILInit.CREATIVE_MODE_TABS.register(modBus);
 
-		NeoForge.EVENT_BUS.register(ILInit.class);
+        NeoForge.EVENT_BUS.register(ILInit.class);
 
-		if (dist.isClient()) {
-			modBus.addListener(ClientProxy::onClientSetup);
-			NeoForge.EVENT_BUS.register(ClientProxy.class);
-		}
-	}
+        if (dist.isClient()) {
+            modBus.addListener(ClientProxy::onClientSetup);
+            NeoForge.EVENT_BUS.register(ClientProxy.class);
+        }
+    }
 
-	private void loadCustomBlocks() {
-		final Path path = FMLPaths.CONFIGDIR.get().resolve("gircLightBlocks.json");
-		if (Files.notExists(path)) {
-			LOG.debug("Did not find {} skipping!", path);
-			return;
-		}
-		final Gson gson = new Gson();
-		try (final Reader reader = Files.newBufferedReader(path)) {
-			gson.fromJson(reader, BlockLists.class).registerInto();
-		} catch (final IOException e) {
-			LOG.error("Could not read {}", path, e);
-		} catch (final JsonSyntaxException e) {
-			LOG.error("Could not parse json! Error {}", e.getMessage());
-		}
-	}
+    private void loadCustomBlocks() {
+        final Path path = FMLPaths.CONFIGDIR.get().resolve("gircLightBlocks.json");
+        if (Files.notExists(path)) {
+            LOG.debug("Did not find {} skipping!", path);
+            return;
+        }
+        final Gson gson = new Gson();
+        try (final Reader reader = Files.newBufferedReader(path)) {
+            gson.fromJson(reader, BlockLists.class).registerInto();
+        } catch (final IOException e) {
+            LOG.error("Could not read {}", path, e);
+        } catch (final JsonSyntaxException e) {
+            LOG.error("Could not parse json! Error {}", e.getMessage());
+        }
+    }
 }

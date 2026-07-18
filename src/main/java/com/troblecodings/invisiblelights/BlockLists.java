@@ -8,11 +8,11 @@ import com.troblecodings.invisiblelights.init.ILInit;
 
 public final class BlockLists {
 
-	private List<String> stateless;
-	private List<String> statebased;
+    private List<String> stateless;
+    private List<String> statebased;
 
-	public void registerInto() {
-		stateless.forEach(name -> ILInit.register(name, () -> new BlockCustomLight(0)));
-		statebased.forEach(name -> ILInit.register(name, () -> new BlockCustomState(0)));
-	}
+    public void registerInto() {
+        stateless.forEach(name -> ILInit.register(name, () -> new BlockCustomLight(0)));
+        statebased.forEach(name -> ILInit.register(name, () -> new BlockCustomState(0)));
+    }
 }
