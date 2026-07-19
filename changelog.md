@@ -1,9 +1,8 @@
 # Changelog
 
-## [1.12.2 - 1.1.0]
+## [26.2 - 1.1.0]
 
-* ref: package rename
-* ref: build pipeline
+* port: 26.2 Neoforge
 
 ## [Fix]
 
