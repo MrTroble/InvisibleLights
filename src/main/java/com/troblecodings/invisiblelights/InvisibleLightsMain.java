@@ -5,64 +5,56 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.troblecodings.invisiblelights.init.ILInit;
-import com.troblecodings.invisiblelights.proxy.CommonProxy;
+import com.troblecodings.invisiblelights.proxy.ClientProxy;
 
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
 
-@Mod(modid = InvisibleLightsMain.MODID, acceptedMinecraftVersions = "[1.12.2]")
+@Mod(InvisibleLightsMain.MODID)
 public class InvisibleLightsMain {
 
-    @Instance
-    private static InvisibleLightsMain instance;
     public static final String MODID = "invisiblelights";
+    public static final Logger LOG = LogManager.getLogger(MODID);
 
-    public static InvisibleLightsMain getInstance() {
-        return instance;
+    public InvisibleLightsMain(final IEventBus modBus, final ModContainer container,
+            final Dist dist) {
+        loadCustomBlocks();
+
+        ILInit.BLOCKS.register(modBus);
+        ILInit.ITEMS.register(modBus);
+        ILInit.CREATIVE_MODE_TABS.register(modBus);
+
+        NeoForge.EVENT_BUS.register(ILInit.class);
+
+        if (dist.isClient()) {
+            modBus.addListener(ClientProxy::onClientSetup);
+            NeoForge.EVENT_BUS.register(ClientProxy.class);
+        }
     }
 
-    @SidedProxy(serverSide = "com.troblecodings.invisiblelights.proxy.CommonProxy",
-            clientSide = "com.troblecodings.invisiblelights.proxy.ClientProxy")
-    public static CommonProxy proxy;
-    public static Logger log;
-
-    @EventHandler
-    public void preinit(final FMLPreInitializationEvent event) {
-        log = event.getModLog();
-        proxy.preinit(event);
-        final Path path =
-                event.getModConfigurationDirectory().toPath().resolve("invisiblelights.json");
+    private void loadCustomBlocks() {
+        final Path path = FMLPaths.CONFIGDIR.get().resolve("invisiblelights.json");
         if (Files.notExists(path)) {
-            log.debug("Did not find {} skipping!", path.toString());
+            LOG.debug("Did not find {} skipping!", path);
             return;
         }
         final Gson gson = new Gson();
         try (final Reader reader = Files.newBufferedReader(path)) {
-            gson.fromJson(reader, BlockLists.class).addToList(ILInit.BLOCKS_TO_REGISTER);
+            gson.fromJson(reader, BlockLists.class).registerInto();
         } catch (final IOException e) {
-            e.printStackTrace();
+            LOG.error("Could not read {}", path, e);
         } catch (final JsonSyntaxException e) {
-            log.error("Could not parse json! Error {}", e.getMessage());
+            LOG.error("Could not parse json! Error {}", e.getMessage());
         }
-    }
-
-    @EventHandler
-    public void init(final FMLInitializationEvent event) {
-        proxy.init(event);
-    }
-
-    @EventHandler
-    public void postinit(final FMLPostInitializationEvent event) {
-        proxy.postinit(event);
     }
 }

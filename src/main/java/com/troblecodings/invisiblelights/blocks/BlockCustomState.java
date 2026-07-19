@@ -1,72 +1,59 @@
 package com.troblecodings.invisiblelights.blocks;
 
-import java.util.Random;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 
 public class BlockCustomState extends BlockCustomLight {
 
-    public static final PropertyBool POWERED = PropertyBool.create("powered");
+    public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 
-    public BlockCustomState(final int light) {
-        super(light);
+    public BlockCustomState(final Block.Properties props, final int light) {
+        super(props, light);
+        registerDefaultState(this.stateDefinition.any().setValue(POWERED, false));
     }
 
     @Override
-    public IBlockState getStateFromMeta(final int meta) {
-        return this.getDefaultState().withProperty(POWERED, meta == 0 ? false : true);
+    protected void createBlockStateDefinition(
+            final StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(POWERED);
     }
 
-    @Override
-    public int getMetaFromState(final IBlockState state) {
-        return state.getValue(POWERED) ? 1 : 0;
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, POWERED);
-    }
-
-    @Override
-    public void onBlockAdded(final World worldIn, final BlockPos pos, final IBlockState state) {
-        super.onBlockAdded(worldIn, pos, state);
-        if (worldIn.isRemote)
+    private void updatePowerState(final BlockState state, final Level level, final BlockPos pos) {
+        if (level.isClientSide)
             return;
         final boolean lastPowered = state.getValue(POWERED);
-        if (worldIn.isBlockPowered(pos) && !lastPowered) {
-            worldIn.setBlockState(pos, state.withProperty(POWERED, true), 3);
-        } else if (!worldIn.isBlockPowered(pos) && lastPowered) {
-            worldIn.scheduleUpdate(pos, this, 4);
+        if (level.hasNeighborSignal(pos) && !lastPowered) {
+            level.setBlock(pos, state.setValue(POWERED, true), 3);
+        } else if (!level.hasNeighborSignal(pos) && lastPowered) {
+            level.scheduleTick(pos, this, 4);
         }
     }
 
     @Override
-    public void updateTick(final World worldIn, final BlockPos pos, final IBlockState state,
-            final Random rand) {
-        super.updateTick(worldIn, pos, state, rand);
-        if (worldIn.isRemote)
-            return;
-        final boolean lastPowered = state.getValue(POWERED);
-        if (!worldIn.isBlockPowered(pos) && lastPowered) {
-            worldIn.setBlockState(pos, state.withProperty(POWERED, false), 3);
-        }
+    public void onPlace(final BlockState state, final Level level, final BlockPos pos,
+            final BlockState oldState, final boolean isMoving) {
+        super.onPlace(state, level, pos, oldState, isMoving);
+        updatePowerState(state, level, pos);
     }
 
     @Override
-    public void neighborChanged(final IBlockState state, final World worldIn, final BlockPos pos,
-            final Block blockIn, final BlockPos fromPos) {
-        if (worldIn.isRemote)
-            return;
-        final boolean lastPowered = state.getValue(POWERED);
-        if (worldIn.isBlockPowered(pos) && !lastPowered) {
-            worldIn.setBlockState(pos, state.withProperty(POWERED, true), 3);
-        } else if (!worldIn.isBlockPowered(pos) && lastPowered) {
-            worldIn.scheduleUpdate(pos, this, 4);
+    protected void neighborChanged(final BlockState state, final Level level, final BlockPos pos,
+            final Block blockIn, final Orientation orientation, final boolean isMoving) {
+        updatePowerState(state, level, pos);
+    }
+
+    @Override
+    public void tick(final BlockState state, final ServerLevel level, final BlockPos pos,
+            final RandomSource rand) {
+        if (!level.hasNeighborSignal(pos) && state.getValue(POWERED)) {
+            level.setBlock(pos, state.setValue(POWERED, false), 3);
         }
     }
 }

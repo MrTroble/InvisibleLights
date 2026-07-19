@@ -1,67 +1,34 @@
 package com.troblecodings.invisiblelights.blocks;
 
-import com.troblecodings.invisiblelights.init.ILInit;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BlockInvisibleLight extends Block {
 
-    public BlockInvisibleLight(final int light) {
-        super(Material.GROUND);
-        this.setLightLevel(light / 15.0f);
-        this.setCreativeTab(ILInit.LIGHT_TAB);
-        this.disableStats();
+    public BlockInvisibleLight(final Block.Properties props, final int light) {
+        super(props.lightLevel(state -> light).strength(0.5f).noOcclusion());
     }
 
     @Override
-    public boolean isPassable(final IBlockAccess worldIn, final BlockPos pos) {
-        return true;
+    public RenderShape getRenderShape(final BlockState state) {
+        return RenderShape.INVISIBLE;
     }
 
     @Override
-    public boolean isOpaqueCube(final IBlockState state) {
-        return false;
+    public VoxelShape getCollisionShape(final BlockState state, final BlockGetter worldIn,
+            final BlockPos pos, final CollisionContext context) {
+        return Shapes.empty();
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(final IBlockState state) {
-        return EnumBlockRenderType.INVISIBLE;
+    public VoxelShape getShape(final BlockState state, final BlockGetter worldIn,
+            final BlockPos pos, final CollisionContext context) {
+        return Shapes.block();
     }
-
-    @Override
-    public BlockRenderLayer getBlockLayer() {
-        return BlockRenderLayer.CUTOUT;
-    }
-
-    @Override
-    public boolean isFullCube(final IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess source, final BlockPos pos) {
-        return FULL_BLOCK_AABB;
-    }
-
-    @Override
-    public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, final IBlockAccess worldIn,
-            final BlockPos pos) {
-        return NULL_AABB;
-    }
-
-    @Override
-    public BlockFaceShape getBlockFaceShape(final IBlockAccess worldIn, final IBlockState state, final BlockPos pos,
-            final EnumFacing face) {
-        return BlockFaceShape.UNDEFINED;
-    }
-
 }
