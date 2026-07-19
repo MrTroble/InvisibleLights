@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "invisiblelights:items/invisiblelights"
+        "layer0": "invisiblelights:item/invisiblelights"
     },
     "credit": "Made with Blockbench by Mc_Jeronimo"
 }
