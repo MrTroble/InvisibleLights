@@ -15,12 +15,12 @@
 
 ### Setup Eclipse
 
-- ``./gradlew genEclipseRuns eclipse``
+- ``./gradlew eclipse``
 - Import project as existing workspace
 
 ### Setup IntelliJ IDEA
 
-- ``./gradlew genIntellijRuns``
+- ``./gradlew idea``
 - Import as gradle project
 
 ### Build
