@@ -1,1 +1,5 @@
-{"variants": {"normal": {"model": "invisiblelights:ghostglowstone"}}}
+{
+    "variants": {
+        "": { "model": "invisiblelights:block/ghostglowstone" }
+    }
+}
