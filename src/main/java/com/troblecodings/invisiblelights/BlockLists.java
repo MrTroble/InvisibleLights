@@ -1,37 +1,25 @@
 package com.troblecodings.invisiblelights;
 
-import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.util.List;
-
-import org.apache.commons.io.input.ReaderInputStream;
 
 import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
 import com.troblecodings.invisiblelights.blocks.BlockCustomState;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.text.translation.LanguageMap;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 public final class BlockLists {
 
     private List<String> stateless;
     private List<String> statebased;
 
-    private Block addLanguage(final Block block, final String name, final StringBuilder builder) {
-        block.setUnlocalizedName(name);
-        block.setRegistryName(InvisibleLightsMain.MODID, name);
-        builder.append(block.getLocalizedName());
-        builder.append("=");
-        builder.append(name);
-        builder.append(System.lineSeparator());
+    private static Block register(final Block block, final String name) {
+        block.setRegistryName(new ResourceLocation(InvisibleLightsMain.MODID, name));
         return block;
     }
 
     public void addToList(final List<Block> blocks) {
-        final StringBuilder builder = new StringBuilder();
-        stateless.forEach(name -> blocks.add(addLanguage(new BlockCustomLight(0), name, builder)));
-        statebased.forEach(name -> blocks.add(addLanguage(new BlockCustomState(0), name, builder)));
-        LanguageMap.inject(new ReaderInputStream(new StringReader(builder.toString()),
-                Charset.defaultCharset()));
+        stateless.forEach(name -> blocks.add(register(new BlockCustomLight(0), name)));
+        statebased.forEach(name -> blocks.add(register(new BlockCustomState(0), name)));
     }
 }
