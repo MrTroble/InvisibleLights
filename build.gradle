@@ -1,11 +1,11 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
-        maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:6.0.+'
         classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
         classpath "com.modrinth.minotaur:Minotaur:2.+"
     }
@@ -14,7 +14,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: "com.matthewprenger.cursegradle"
 apply plugin: 'com.modrinth.minotaur'
 
 group = project.mod_group
@@ -29,37 +29,33 @@ java {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20171003-1.12'
-
+    mappings channel: 'snapshot', version: '20210309-1.16.5'
     runs {
         client {
             workingDirectory project.file('run')
             property 'forge.logging.console.level', 'debug'
+            mods {
+                invisiblelights {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            mods {
+                invisiblelights {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
-}
-
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("META-INF/mods.toml") {
-        expand(
-            version: project.version,
-            mcversion: project.minecraft_version,
-            forgeversion: project.forge_version_main,
-            modid: project.mod_id,
-            modname: project.mod_name,
-            author: project.mod_author
-        )
-    }
 }
 
 jar {
