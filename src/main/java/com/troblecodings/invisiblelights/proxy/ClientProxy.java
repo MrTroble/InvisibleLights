@@ -2,67 +2,50 @@ package com.troblecodings.invisiblelights.proxy;
 
 import java.util.ArrayList;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
 import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
 import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
 import com.troblecodings.invisiblelights.init.ILInit;
-import com.troblecodings.invisiblelights.init.ILModel;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent.BreakEvent;
-import net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
+import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 
-public class ClientProxy extends CommonProxy {
+@OnlyIn(Dist.CLIENT)
+public final class ClientProxy {
 
-    @Override
-    public void preinit(final FMLPreInitializationEvent event) {
-        super.preinit(event);
-        MinecraftForge.EVENT_BUS.register(ClientProxy.class);
-        ModelLoaderRegistry.registerLoader(new ILModel());
+    private ClientProxy() {
     }
 
-    @SubscribeEvent
-    public static void modelEvents(final ModelRegistryEvent event) {
-        ILInit.ITEMS_TO_REGISTER.forEach(item -> ModelLoader.setCustomModelResourceLocation(item, 0,
-                new ModelResourceLocation(item.getRegistryName(), "inventory")));
-        ILInit.BLOCKS_TO_REGISTER.forEach(block -> {
-            final Item item = Item.getItemFromBlock(block);
-            ModelLoader.setCustomModelResourceLocation(item, 0,
-                    new ModelResourceLocation(item.getRegistryName(), "inventory"));
-        });
-
+    public static void onClientSetup(final FMLClientSetupEvent event) {
+        ItemBlockRenderTypes.setRenderLayer(ILInit.GHOST_GLOWSTONE.get(),
+                RenderType.cutoutMipped());
     }
 
     private static final int RADIUS = 50;
     private static final int UPDATE_SPHERE = 50;
     private static final int RADIUSPLAYER = RADIUS * RADIUS + 10;
-    private static double d1;
-    private static double d2;
-    private static double d3;
 
     private static final float[] COLOR_NORMAL = new float[] {
             0, 1, 0, 1
@@ -74,27 +57,22 @@ public class ClientProxy extends CommonProxy {
             1, 0.5f, 0, 1
     };
 
-    public static void render(final BlockPos pos1, final float[] color) {
-        RenderGlobal.drawSelectionBoundingBox(Block.FULL_BLOCK_AABB.offset((pos1.getX()) - d1,
-                (pos1.getY()) - d2, (pos1.getZ()) - d3), color[0], color[1], color[2], color[3]);
-    }
-
-    private static ArrayList<BlockPos> playerPlacedBlocks = new ArrayList<>();
+    private static final ArrayList<BlockPos> PLAYER_PLACED_BLOCKS = new ArrayList<>();
     private static boolean dirty = true;
-    private static BlockPos lastPosition = BlockPos.ORIGIN;
+    private static BlockPos lastPosition = BlockPos.ZERO;
 
-    public static void refill(final BlockPos pos, final World world) {
+    public static void refill(final BlockPos pos, final Level level) {
         lastPosition = pos;
         dirty = false;
         new Thread(() -> {
             for (int x = -RADIUS; x <= RADIUS; x++) {
                 for (int y = -RADIUS; y <= RADIUS; y++) {
                     for (int z = -RADIUS; z <= RADIUS; z++) {
-                        final BlockPos nPos = pos.add(x, y, z);
-                        final Block pBlock = world.getBlockState(nPos).getBlock();
+                        final BlockPos nPos = pos.offset(x, y, z);
+                        final Block pBlock = level.getBlockState(nPos).getBlock();
                         if (pBlock instanceof BlockInvisibleLight) {
-                            synchronized (playerPlacedBlocks) {
-                                playerPlacedBlocks.add(nPos);
+                            synchronized (PLAYER_PLACED_BLOCKS) {
+                                PLAYER_PLACED_BLOCKS.add(nPos);
                             }
                         }
                     }
@@ -103,102 +81,94 @@ public class ClientProxy extends CommonProxy {
         }).start();
     }
 
-    @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public static void renderOverlayEvent(final DrawBlockHighlightEvent render) {
-        final EntityPlayer player = render.getPlayer();
+    public static void renderOverlayEvent(final RenderHighlightEvent.Block event) {
+        final BlockHitResult result = event.getTarget();
+        final Player player = Minecraft.getInstance().player;
         if (player == null)
             return;
-        final World world = player.getEntityWorld();
-        if (world == null)
+        final Level level = player.level();
+        if (level == null)
             return;
-        final RayTraceResult result = render.getTarget();
-        if (result == null)
-            return;
-        final BlockPos pos = result.getBlockPos();
-        if (pos == null)
-            return;
-        final IBlockState state = world.getBlockState(pos);
+        final BlockState state = level.getBlockState(result.getBlockPos());
         if (state.getBlock() instanceof BlockInvisibleLight) {
-            render.setCanceled(true);
+            event.setCanceled(true);
         }
     }
 
-    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void blockPlaceEvent(final EntityPlaceEvent event) {
         final Entity placerEntity = event.getEntity();
         if (placerEntity == null)
             return;
-        final EntityPlayerSP player = Minecraft.getMinecraft().player;
+        final LocalPlayer player = Minecraft.getInstance().player;
         if (player == null)
             return;
-        final BlockPos playerPos = player.getPosition();
-        final double distance = placerEntity.getPosition().distanceSq(playerPos);
+        final BlockPos playerPos = player.blockPosition();
+        final double distance = placerEntity.blockPosition().distSqr(playerPos);
         if (distance < RADIUSPLAYER) {
             if (event.getPlacedBlock().getBlock() instanceof BlockInvisibleLight) {
-                playerPlacedBlocks.clear();
-                refill(playerPos, player.getEntityWorld());
-            }
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void blockPlaceEvent(final BreakEvent event) {
-        synchronized (playerPlacedBlocks) {
-            if (playerPlacedBlocks.contains(event.getPos())) {
-                playerPlacedBlocks.remove(event.getPos());
+                PLAYER_PLACED_BLOCKS.clear();
+                refill(playerPos, player.level());
             }
         }
     }
 
     @SubscribeEvent
-    public static void modelEvents(final RenderWorldLastEvent event) {
-        final EntityPlayerSP sp = Minecraft.getMinecraft().player;
-        final Block block = Block.getBlockFromItem(sp.getHeldItemMainhand().getItem());
-        if (block instanceof BlockInvisibleLight) {
-            final BlockPos pos = sp.getPosition();
-            if (pos.distanceSq(lastPosition) > UPDATE_SPHERE) {
-                synchronized (playerPlacedBlocks) {
-                    playerPlacedBlocks.clear();
-                }
+    public static void blockBreakEvent(final BreakEvent event) {
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.remove(event.getPos());
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderWorldLastEvent(final RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES)
+            return;
+        final LocalPlayer sp = Minecraft.getInstance().player;
+        if (sp == null)
+            return;
+        final Block block = Block.byItem(sp.getMainHandItem().getItem());
+        if (!(block instanceof BlockInvisibleLight)) {
+            if (!PLAYER_PLACED_BLOCKS.isEmpty()) {
+                PLAYER_PLACED_BLOCKS.clear();
                 dirty = true;
             }
-            if (dirty) {
-                refill(pos, sp.world);
-            }
-            if (playerPlacedBlocks.isEmpty())
-                return;
-            final double part = event.getPartialTicks();
-            d1 = sp.lastTickPosX + (sp.posX - sp.lastTickPosX) * part;
-            d2 = sp.lastTickPosY + (sp.posY - sp.lastTickPosY) * part;
-            d3 = sp.lastTickPosZ + (sp.posZ - sp.lastTickPosZ) * part;
+            return;
+        }
 
-            GlStateManager.disableTexture2D();
-            synchronized (playerPlacedBlocks) {
-                playerPlacedBlocks.forEach(posIn -> {
-                    final Block blockIn = sp.world.getBlockState(posIn).getBlock();
-                    final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
-                            : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
-                    ClientProxy.render(posIn, color);
-                });
+        final BlockPos pos = sp.blockPosition();
+        if (pos.distSqr(lastPosition) > UPDATE_SPHERE) {
+            synchronized (PLAYER_PLACED_BLOCKS) {
+                PLAYER_PLACED_BLOCKS.clear();
             }
-            GlStateManager.enableTexture2D();
-        } else if (!playerPlacedBlocks.isEmpty()) {
-            playerPlacedBlocks.clear();
             dirty = true;
         }
-    }
+        if (dirty) {
+            refill(pos, sp.level());
+        }
+        if (PLAYER_PLACED_BLOCKS.isEmpty())
+            return;
 
-    @Override
-    public void init(final FMLInitializationEvent event) {
-        super.init(event);
-    }
+        final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        final PoseStack poseStack = new PoseStack();
 
-    @Override
-    public void postinit(final FMLPostInitializationEvent event) {
-        super.postinit(event);
-    }
+        final MultiBufferSource.BufferSource buffers =
+                Minecraft.getInstance().renderBuffers().bufferSource();
+        final VertexConsumer builder = buffers.getBuffer(RenderType.lines());
 
+        synchronized (PLAYER_PLACED_BLOCKS) {
+            PLAYER_PLACED_BLOCKS.forEach(posIn -> {
+                final Block blockIn = sp.level().getBlockState(posIn).getBlock();
+                final float[] color = blockIn instanceof BlockLightBlocker ? COLOR_BLOCKER
+                        : (blockIn instanceof BlockCustomLight ? COLOR_CUSTOM : COLOR_NORMAL);
+                ShapeRenderer.renderLineBox(poseStack, builder, posIn.getX() - view.x,
+                        posIn.getY() - view.y, posIn.getZ() - view.z, posIn.getX() + 1.0 - view.x,
+                        posIn.getY() + 1.0 - view.y, posIn.getZ() + 1.0 - view.z, color[0],
+                        color[1], color[2], color[3]);
+            });
+        }
+
+        buffers.endBatch(RenderType.lines());
+    }
 }
