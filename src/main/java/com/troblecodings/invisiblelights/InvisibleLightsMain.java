@@ -42,7 +42,7 @@ public class InvisibleLightsMain {
     }
 
     private void loadCustomBlocks() {
-        final Path path = FMLPaths.CONFIGDIR.get().resolve("gircLightBlocks.json");
+        final Path path = FMLPaths.CONFIGDIR.get().resolve("invisiblelights.json");
         if (Files.notExists(path)) {
             LOG.debug("Did not find {} skipping!", path);
             return;
