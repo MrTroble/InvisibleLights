@@ -1,8 +1,8 @@
 # Changelog
 
-## [26.1.2 - 1.1.0]
+## [26.2 - 1.1.0]
 
-* port: 26.1.2 Neoforge
+* port: 26.2 Neoforge
 
 ## [Fix]
 

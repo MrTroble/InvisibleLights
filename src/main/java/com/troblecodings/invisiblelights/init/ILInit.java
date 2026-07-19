@@ -86,7 +86,7 @@ public final class ILInit {
     }
 
     @SubscribeEvent
-    public static void blockBreakEven(final BreakBlockEvent event) {
+    public static void blockBreakEvent(final BreakBlockEvent event) {
         if (!(event.getState().getBlock() instanceof BlockInvisibleLight))
             return;
         final Player player = event.getPlayer();

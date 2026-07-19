@@ -1,8 +1,8 @@
 {
     "pack": {
         "description": "Invisible lights mod resources",
-        "pack_format": 84.0,
-        "min_format": [84, 0],
-        "max_format": [84, 0]
+        "pack_format": 88.0,
+        "min_format": [88, 0],
+        "max_format": [88, 0]
     }
 }
