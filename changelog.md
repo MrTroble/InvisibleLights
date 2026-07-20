@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.20.4 - 1.1.1]
+
+* ref: update buildscript
+
 ## [1.20.4 - 1.1.0]
 
 * port: 1.20.4
