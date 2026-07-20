@@ -1,24 +1,11 @@
-buildscript {
-    repositories {
-        maven { url "https://plugins.gradle.org/m2/" }
-        mavenCentral()
-    }
-    dependencies {
-        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
-        classpath "com.modrinth.minotaur:Minotaur:2.+"
-    }
-}
-
 plugins {
     id 'java-library'
     id 'eclipse'
     id 'idea'
-    id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.1.+'
+    id 'net.darkhax.curseforgegradle' version '1.3.+'
+    id 'com.modrinth.minotaur' version '2.+'
 }
-
-apply plugin: "com.matthewprenger.cursegradle"
-apply plugin: 'com.modrinth.minotaur'
 
 group = project.mod_group
 version = project.mod_version
@@ -62,25 +49,23 @@ jar {
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+
+    from("changelog.md")
+    from("LICENSE")
 }
 
-def key = System.getenv("CURSETOKEN")
-if (key == null)
-    key = 'dev'
-
-curseforge {
-    apiKey = key 
-
-    project {
-        id = project.curseforge_project_id
-
-        changelog = file("changelog.md")
-        changelogType = "markdown"
-
-        releaseType = "release"
-
-        addGameVersion project.minecraft_version
-    }
+tasks.register("publishCurseforge", net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    def key = System.getenv("CURSETOKEN")
+    if (key == null)
+        key = 'dev'
+    apiToken = key
+    def mainFile = upload(project.curseforge_project_id, jar)
+    mainFile.changelog = file("changelog.md").text
+    mainFile.changelogType = 'markdown'
+    mainFile.releaseType = 'release'
+    mainFile.addModLoader("${project.loader}")
+    mainFile.addEnvironment("Client", "Server")
+    mainFile.addGameVersion("${project.minecraft_version}")
 }
 
 modrinth {
@@ -99,6 +84,6 @@ modrinth {
     changelog = file("changelog.md").text
 }
 
-tasks.register("publishMods") {
-    dependsOn("curseforge", "modrinth")
+tasks.register("publishModrinth") {
+    dependsOn("modrinth")
 }
