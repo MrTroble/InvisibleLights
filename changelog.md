@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.2 - 1.1.1]
+
+* ref: update buildscript
+
 ## [26.2 - 1.1.0]
 
 * port: 26.2 Neoforge
