@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.12.2 - 1.1.1]
+
+* ref: update buildscript
+
 ## [1.12.2 - 1.1.0]
 
 * ref: package rename
