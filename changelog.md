@@ -1,9 +1,12 @@
 # Changelog
 
-## [1.12.2 - 1.1.0]
+## [1.21.11 - 1.1.1]
 
-* ref: package rename
-* ref: build pipeline
+* ref: update buildscript
+
+## [1.21.11 - 1.1.0]
+
+* port: 1.21.11 Neoforge
 
 ## [Fix]
 
