@@ -8,11 +8,14 @@ import com.troblecodings.invisiblelights.blocks.BlockCustomLight;
 import com.troblecodings.invisiblelights.blocks.BlockInvisibleLight;
 import com.troblecodings.invisiblelights.blocks.BlockLightBlocker;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -126,12 +129,12 @@ public final class ClientProxy {
         if (PLAYER_PLACED_BLOCKS.isEmpty())
             return;
 
-        final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().position();
+        final Vec3 view = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         final PoseStack poseStack = new PoseStack();
 
         final MultiBufferSource.BufferSource buffers =
                 Minecraft.getInstance().renderBuffers().bufferSource();
-        final RenderType lines = RenderTypes.LINES;
+        final RenderType lines = RenderType.LINES;
         final VertexConsumer builder = buffers.getBuffer(lines);
 
         synchronized (PLAYER_PLACED_BLOCKS) {
@@ -172,9 +175,7 @@ public final class ClientProxy {
             final float ay, final float az, final float bx, final float by, final float bz,
             final float r, final float g, final float bCol, final float a, final float nx,
             final float ny, final float nz) {
-        vc.addVertex(pose, ax, ay, az).setColor(r, g, bCol, a).setNormal(pose, nx, ny, nz)
-                .setLineWidth(1f);
-        vc.addVertex(pose, bx, by, bz).setColor(r, g, bCol, a).setNormal(pose, nx, ny, nz)
-                .setLineWidth(1f);
+        vc.vertex(pose, ax, ay, az).color(r, g, bCol, a).normal(pose, nx, ny, nz);
+        vc.vertex(pose, bx, by, bz).color(r, g, bCol, a).normal(pose, nx, ny, nz);
     }
 }
