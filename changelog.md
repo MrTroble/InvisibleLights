@@ -1,5 +1,9 @@
 # Changelog
 
+## [26.3 - 1.1.2]
+
+* port: 26.3 Neoforge
+
 ## [26.2 - 1.1.2]
 
 * ref: update crafting recipes
