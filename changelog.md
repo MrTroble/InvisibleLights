@@ -1,12 +1,16 @@
 # Changelog
 
+## [26.1.2 - 1.1.2]
+
+* ref: update crafting recipes
+
 ## [26.1.2 - 1.1.1]
 
 * ref: update buildscript
 
-## [26.1.2 - 1.1.0]
+## [1.21.1 - 1.1.0]
 
-* port: 26.1.2 Neoforge
+* port: 1.21.1 Neoforge
 
 ## [Fix]
 
