@@ -1,12 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:glowstone_dust"
-    },
-    {
-      "item": "invisiblelights:invisiblelights12"
-    }
+    "minecraft:glowstone_dust",
+    "invisiblelights:invisiblelights12"
   ],
   "result": {
     "id": "invisiblelights:invisiblelights13",
