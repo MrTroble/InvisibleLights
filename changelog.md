@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.21.4 - 1.1.2]
+
+* ref: update crafting recipes
+
 ## [1.21.4 - 1.1.1]
 
 * ref: update buildscript
