@@ -1,12 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:ink_sac"
-    },
-    {
-      "item": "invisiblelights:ghostglowstone"
-    }
+    "minecraft:ink_sac",
+    "invisiblelights:ghostglowstone"
   ],
   "result": {
     "id": "invisiblelights:blocker",
