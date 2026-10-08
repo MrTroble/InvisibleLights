@@ -1,8 +1,7 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "minecraft:glowstone"
-  },
+  "category": "blocks",
+  "ingredient": "minecraft:glowstone",
   "result": {
     "id": "invisiblelights:ghostglowstone"
   },

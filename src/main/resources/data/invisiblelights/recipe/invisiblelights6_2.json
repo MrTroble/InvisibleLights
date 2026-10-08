@@ -1,9 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
-    {
-      "item": "invisiblelights:invisiblelights7"
-    }
+    "invisiblelights:invisiblelights7"
   ],
   "result": {
     "id": "invisiblelights:invisiblelights6",
