@@ -3,7 +3,9 @@
   "ingredient": {
     "item": "minecraft:glowstone"
   },
-  "result": "invisiblelights:ghostglowstone",
+  "result": {
+    "id": "invisiblelights:ghostglowstone"
+  },
   "experience": 0.35,
   "cookingtime": 200
 }
