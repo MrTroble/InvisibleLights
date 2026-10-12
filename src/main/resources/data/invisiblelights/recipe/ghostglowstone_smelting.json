@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "blocks",
+  "ingredient": "minecraft:glowstone",
+  "result": {
+    "id": "invisiblelights:ghostglowstone"
+  },
+  "experience": 0.35,
+  "cookingtime": 200
+}
